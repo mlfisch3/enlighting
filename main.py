@@ -64,11 +64,11 @@ def main():
     print(f'[{timestamp()}] total_app_runs: {ss.total_app_runs}')
     print(f'[{timestamp()}] completed_app_runs: {ss.completed_app_runs}')
 
-    try:
-        assert run_app(), f'[{timestamp()}] Process was stopped before completing.  Re-running ...'
-    except AttributeError as msg:
-        print(msg)
-        st.experimental_rerun()
+    # try:
+    #     assert run_app(), f'[{timestamp()}] Process was stopped before completing.  Re-running ...'
+    # except AttributeError as msg:
+    #     print(msg)
+    #     st.experimental_rerun()
 
 
     gc.collect()
