@@ -70,7 +70,8 @@ def main():
     #     print(msg)
     #     st.experimental_rerun()
 
-
+    run_app()
+    
     gc.collect()
     log_memory('main|run_app|E')
     total_end = datetime.datetime.now()
