@@ -37,22 +37,22 @@ def main():
 
     st.session_state.total_main_runs += 1
 
-    # query_params = st.experimental_get_query_params()
-    # for k,v in query_params.items():
-    #     ss.query_params[k] = v[0]
-    #     ss.query_params.setdefault(k,v[0])
+    query_params = st.experimental_get_query_params()
+    for k,v in query_params.items():
+        ss.query_params[k] = v[0]
+        ss.query_params.setdefault(k,v[0])
 
-    # if 'console' in query_params:
-    #     st.session_state.show_console = query_params['console'][0]
-    # else:
-    #     st.session_state.show_console = False
+    if 'console' in query_params:
+        st.session_state.show_console = query_params['console'][0]
+    else:
+        st.session_state.show_console = False
 
-    # print(f'[{timestamp()}] st.session_state.show_console: {st.session_state.show_console}')
-    # print(f"[{timestamp()}] st.session_state.query_params.console: {st.session_state.query_params['console']}")
-    # print(f'[{timestamp()}] ------------ QUERY PARAMS (local) -----------------')
-    # print(f'[{timestamp()}] {query_params}')
-    # print(f'[{timestamp()}] ------------ QUERY PARAMS (global) -----------------')
-    # print(f'[{timestamp()}] {ss.query_params}')
+    print(f'[{timestamp()}] st.session_state.show_console: {st.session_state.show_console}')
+    print(f"[{timestamp()}] st.session_state.query_params.console: {st.session_state.query_params['console']}")
+    print(f'[{timestamp()}] ------------ QUERY PARAMS (local) -----------------')
+    print(f'[{timestamp()}] {query_params}')
+    print(f'[{timestamp()}] ------------ QUERY PARAMS (global) -----------------')
+    print(f'[{timestamp()}] {ss.query_params}')
 
     total_start = datetime.datetime.now()
     log_memory('main|run_app|B')
