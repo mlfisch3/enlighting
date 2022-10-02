@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.config import NPY_DIR, IMAGE_DIR, DATA_DIR
+from utils.config import NPY_DIR_PATH, IMAGE_DIR_PATH, DATA_DIR_PATH
 
 def initialize_session():
 
@@ -71,13 +71,13 @@ def initialize_session():
         st.session_state.command = ''
 
     if 'npy_dir' not in st.session_state:
-        st.session_state.npy_dir = NPY_DIR
+        st.session_state.npy_dir = NPY_DIR_PATH
 
     if 'data_dir' not in st.session_state:
-        st.session_state.data_dir = DATA_DIR
+        st.session_state.data_dir = DATA_DIR_PATH
 
     if 'image_dir' not in st.session_state:
-        st.session_state.image_dir = IMAGE_DIR
+        st.session_state.image_dir = IMAGE_DIR_PATH
 
     if 'keys_to_npy' not in st.session_state:
         st.session_state.keys_to_npy = {}
