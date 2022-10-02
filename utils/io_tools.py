@@ -232,7 +232,12 @@ def load_image(fImage=None, example_path='.', reload_previous=False):
 
             st.session_state.input_file_path = impath
         else:
-            input_file_name = example_path.split('\\')[-1]
+            OS_NAME = os.name
+            if OS_NAME == 'posix':
+                input_file_name = example_path.split('\/')[-1]
+            elif OS_NAME == 'nt':
+                input_file_name = example_path.split('\\')[-1]
+
             input_source = 'E'  # example image
             st.session_state.input_file_path = example_path
 
