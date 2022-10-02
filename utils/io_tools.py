@@ -241,8 +241,11 @@ def load_image(fImage=None, example_path='.', reload_previous=False):
 
             input_source = 'E'  # example image
             st.session_state.input_file_path = example_path
+            print(f'[{timestamp()}] input_file_name: {input_file_name}')   
 
+        print(f'[{timestamp()}] input_file_name: {input_file_name}')            
         st.session_state.input_file_name = input_file_name
+        print(f'[{timestamp()}] st.session_state.input_file_name: {st.session_state.input_file_name}')   
         st.session_state.input_file_ext = input_file_name.split('.')[-1]
         st.session_state.input_source = input_source
 
