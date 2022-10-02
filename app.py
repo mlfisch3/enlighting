@@ -433,15 +433,17 @@ def run_app(default_power=0.5,
             virt = virtual_memory()[3]/float(2**20)
             swap = swap_memory()[1]/float(2**20)
 
-            st.text(f'[{timestamp()}]\nPID: {pid}')
-
-            st.text(f'rss: {mem:.2f} MB\nvirt: {virt:.2f} MB\nswap: {swap:.2f} MB')
             print(f'[{timestamp()}] mem: {mem}') 
             if mem > 950:
                 clear_cache()
             elif mem > 800:
                 st.session_state.low_resources = True
+            mem = Process(pid).memory_info()[0]/float(2**20)
             print(f'[{timestamp()}] mem: {mem}') 
+
+            st.text(f'[{timestamp()}]\nPID: {pid}')
+            st.text(f'rss: {mem:.2f} MB\nvirt: {virt:.2f} MB\nswap: {swap:.2f} MB')
+            
     # with st.form("Download Batch"):
     #     st.text('Download All Output Files to Local Folder:')     
 
