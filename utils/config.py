@@ -6,9 +6,9 @@ BASE_DIR = os.path.split(sys.path[0])[0] # sys.path[0] returns absolute path to 
 NPY_DIR = os.path.join(BASE_DIR, 'NPY')
 IMAGE_DIR = os.path.join(BASE_DIR, 'IMAGES')
 DATA_DIR = os.path.join(BASE_DIR, 'DATA')
+EXAMPLES_DIR_PATH = os.path.join(BASE_DIR, 'examples')
 
 DEFAULT_DIR_PATH = f'DOWNLOADS'
-EXAMPLES_DIR_PATH = 'examples'
 
 SCRAPYARD_FILE_NAME = 'scrapyard.jpg'
 SELFIE_FILE_NAME = 'selfie.jpg'
