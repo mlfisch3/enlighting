@@ -10,7 +10,7 @@ from os import getpid
 import sys
 import gc
 from utils.io_tools import change_extension, load_binary, load_image, mkpath
-from utils.config import NPY_DIR, IMAGE_DIR, EXAMPLE_PATHS, EXAMPLES, DEFAULT_DIR_PATH, DATA_DIR, EXAMPLES_DIR
+from utils.config import NPY_DIR_PATH, IMAGE_DIR_PATH, EXAMPLE_PATHS, EXAMPLES, DATA_DIR_PATH, EXAMPLES_DIR_PATH
 from utils.sodef import bimef
 from utils.array_tools import float32_to_uint8, uint8_to_float32, normalize_array, array_info, mono_float32_to_rgb_uint8
 from utils.logging import timestamp, log_memory
@@ -53,10 +53,10 @@ def run_app(default_power=0.5,
 
     st.session_state.total_app_runs += 1
 
-    st.session_state.npy_dir = NPY_DIR
-    st.session_state.image_dir = IMAGE_DIR
-    st.session_state.data_dir = DATA_DIR
-    st.session_state.examples_dir = EXAMPLES_DIR
+    st.session_state.npy_dir = NPY_DIR_PATH
+    st.session_state.image_dir = IMAGE_DIR_PATH
+    st.session_state.data_dir = DATA_DIR_PATH
+    st.session_state.examples_dir = EXAMPLES_DIR_PATH
 
     with st.sidebar:
 

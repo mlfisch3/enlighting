@@ -2,13 +2,11 @@ import streamlit as st
 import os
 import sys
 
-BASE_DIR = os.path.split(sys.path[0])[0] # sys.path[0] returns absolute path to FILE main.py instead of current working directory.  unexpected behavior
-NPY_DIR = os.path.join(BASE_DIR, 'NPY')
-IMAGE_DIR = os.path.join(BASE_DIR, 'IMAGES')
-DATA_DIR = os.path.join(BASE_DIR, 'DATA')
-EXAMPLES_DIR_PATH = os.path.join(BASE_DIR, 'examples')
-
-DEFAULT_DIR_PATH = f'DOWNLOADS'
+BASE_DIR_PATH = os.path.split(sys.path[0])[0] # sys.path[0] returns absolute path to FILE main.py instead of current working directory.  unexpected behavior
+NPY_DIR_PATH = os.path.join(BASE_DIR_PATH, 'NPY')
+IMAGE_DIR_PATH = os.path.join(BASE_DIR_PATH, 'IMAGES')
+DATA_DIR_PATH = os.path.join(BASE_DIR_PATH, 'DATA')
+EXAMPLES_DIR_PATH = os.path.join(BASE_DIR_PATH, 'examples')
 
 SCRAPYARD_FILE_NAME = 'scrapyard.jpg'
 SELFIE_FILE_NAME = 'selfie.jpg'
