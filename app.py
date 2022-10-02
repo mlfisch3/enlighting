@@ -394,17 +394,16 @@ def run_app(default_power=0.5,
            st.markdown("<h3 style='text-align: center; color: white;'>Texture Map</h3>", unsafe_allow_html=True)
            st.image(cv2.imread(st.session_state.keys_to_images[st.session_state.keys_.fine_texture_map_key], cv2.IMREAD_UNCHANGED), clamp=True)
 
-           output_fine_texture_map_file_name = st.text_input('Download Fine Texture Map As', output_fine_texture_map_file_name)
-           ext = '.' + output_fine_texture_map_file_name.split('.')[-1]
-            # image_np_fine_texture_map_binary = cv2.imencode(ext, image_np_fine_texture_map[:,:,[2,1,0]])[1].tobytes()
-           #imbytes = Path(st.session_state.keys_to_images[st.session_state.keys_.fine_texture_map_key]).read_bytes()
-           button = st.download_button(
-                                          label = "Download Fine Texture Map", 
-                                          data=Path(st.session_state.keys_to_images[st.session_state.keys_.fine_texture_map_key]).read_bytes(),
-                                          file_name = output_fine_texture_map_file_name, 
-                                          mime = f"image/{input_file_ext}"
-                                      )
-
+        with st.expander("Configure Download Options")
+            output_fine_texture_map_file_name = st.text_input('Download Fine Texture Map As', output_fine_texture_map_file_name)
+            ext = '.' + output_fine_texture_map_file_name.split('.')[-1]
+            button = st.download_button(
+                                            label = "Download Fine Texture Map", 
+                                            data=Path(st.session_state.keys_to_images[st.session_state.keys_.fine_texture_map_key]).read_bytes(),
+                                            file_name = output_fine_texture_map_file_name, 
+                                            mime = f"image/{input_file_ext}", 
+                                            key='ftm'
+                                       )
     with st.sidebar:
         
         if st.checkbox("View Image Info", help="coming soon"):
