@@ -6,7 +6,7 @@ from utils.array_entropy import entropy
 import copy
 
 def float32_to_uint8(array):
-    array_max = array.ravel().max()
+    array_max = np.max(array)
     if array_max > 1:
         array = array / array_max
     array = (255 * array).astype(np.uint8)
@@ -48,9 +48,9 @@ def normalize_array(array, is_read_only=False):
     else:
         array_ = array
 
-    lo = array_.ravel().min()
+    lo = np.min(array_)
     array_ -= lo    
-    hi = array_.ravel().max()
+    hi = np.max(array_)
     try:
         assert hi > 0, f'normalize_array cannot map null array to interval [0,1]'
     except AssertionError as msg:
@@ -62,12 +62,12 @@ def normalize_array(array, is_read_only=False):
 
 def normalize_arrays(A, B):
 
-    lo = np.hstack([A,B]).ravel().min()
+    lo = np.min(np.hstack([A,B]))
     
     A = A - lo
     B = B - lo
 
-    hi = np.hstack([A,B]).ravel().max()
+    hi = np.max(np.hstack([A,B]))
     A = A / hi
     B = B / hi
     return A, B

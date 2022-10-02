@@ -48,8 +48,8 @@ def run_app(default_power=0.5,
             default_exposure_ratio=-1, 
             default_color_gamma=0.3981):
 
-    # with st.expander("session_state 0:"):
-    #     st.write(st.session_state)
+    with st.expander("session_state 0:"):
+        st.write(st.session_state)
 
     st.session_state.total_app_runs += 1
 
@@ -101,8 +101,8 @@ def run_app(default_power=0.5,
         if all([fImage is None, st.session_state.source_last_updated == 'upload', st.session_state.last_run_exited_early]):
             st.write(st.session_state.input_file_name)
 
-    # with st.expander("session_state 0.2:"):
-    #     st.write(st.session_state)
+    with st.expander("session_state 0.2:"):
+        st.write(st.session_state)
 
     with st.sidebar:
         with st.expander("Parameter Settings"):
@@ -138,8 +138,8 @@ def run_app(default_power=0.5,
     start = datetime.datetime.now()
 
     image_input_key = load_image(fImage, example_path=image_example_path, reload_previous=st.session_state.last_run_exited_early)  ###############################<<<<<<<<<<<<<<<<<<<
-    # with st.expander("session_state 0.3:"):
-    #     st.write(st.session_state)
+    with st.expander("session_state 0.3:"):
+        st.write(st.session_state)
 
     st.session_state.keys_ = Keys(image_input_key, 
                                  granularity, 
@@ -156,8 +156,8 @@ def run_app(default_power=0.5,
                                  lo,
                                  hi)
 
-    # with st.expander("session_state 0.4:"):
-    #     st.write(st.session_state.keys_)
+    with st.expander("session_state 0.4:"):
+        st.write(st.session_state.keys_)
 
     input_image = st.session_state.memmapped[image_input_key]
     image_np, image_01, image_01_maxRGB = input_image
@@ -210,8 +210,8 @@ def run_app(default_power=0.5,
     output_fusion_weights_file_name = input_file_basename + '_FW' + fusion_param_str + input_file_ext
     output_fused_file_name = input_file_basename + '_FUSION' + fusion_param_str + input_file_ext    
     
-    # with st.expander("session_state 0.5:"):
-    #     st.write(st.session_state)
+    with st.expander("session_state 0.5:"):
+        st.write(st.session_state)
 
     col1, col2, col3 = st.columns(3)
 
@@ -483,8 +483,8 @@ def run_app(default_power=0.5,
     
     st.session_state.completed_app_runs += 1
 
-    # with st.expander("session_state 1:"):
-    #  st.write(st.session_state)
+    with st.expander("session_state 1:"):
+     st.write(st.session_state)
 
     return True
 
