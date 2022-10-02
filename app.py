@@ -436,12 +436,12 @@ def run_app(default_power=0.5,
             st.text(f'[{timestamp()}]\nPID: {pid}')
 
             st.text(f'rss: {mem:.2f} MB\nvirt: {virt:.2f} MB\nswap: {swap:.2f} MB')
-
+            print(f'[{timestamp()}] mem: {mem}') 
             if mem > 950:
                 clear_cache()
             elif mem > 800:
                 st.session_state.low_resources = True
-
+            print(f'[{timestamp()}] mem: {mem}') 
     # with st.form("Download Batch"):
     #     st.text('Download All Output Files to Local Folder:')     
 
