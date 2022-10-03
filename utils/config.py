@@ -9,7 +9,7 @@ BASE_DIR_PATH = os.path.split(sys.path[0])[0] # sys.path[0] returns absolute pat
 debug_file_path = os.path.join(BASE_DIR_PATH, 'debug.txt')
 
 DEBUG = False
-if os.isfile(debug_file_path):
+if os.path.isfile(debug_file_path):
     with open(debug_file_path, 'r') as lines:
         if len(lines) > 1:
             DEBUG = True
