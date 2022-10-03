@@ -75,9 +75,18 @@ def run_app(default_power=0.5,
                     command = st.text_input("in")
                     try:
                         console_out = str(subprocess.check_output(command, shell=True, text=True))
+                        
+                        st.session_state.debug = False
+                        if os.path.isfile(DEBUG_FILE_PATH):
+                            with open(DEBUG_FILE_PATH, 'r') as lines:
+                                if len(lines) > 1:
+                                    st.session_state.debug = True
+
                     except subprocess.CalledProcessError as e:
                         #print(vars(e))
                         console_out = f'exited with error\nreturncode: {e.returncode}\ncmd: {e.cmd}\noutput: {e.output}\nstderr: {e.stderr}'
+
+
 
             # st.write(f'IN: {st.session_state.command}')
             # st.text(f'OUT: {st.session_state.console_out}')
