@@ -3,6 +3,9 @@ from utils.config import NPY_DIR_PATH, IMAGE_DIR_PATH, DATA_DIR_PATH
 
 def initialize_session():
 
+    if 'debug' not in st.session_state:
+        st.session_state.debug = False
+
     if 'low_resources' not in st.session_state:
         st.session_state.low_resources = False
 
