@@ -52,21 +52,21 @@ def save_to_npy(fpath, array):
     try:
         np.save(fpath, array)
     except OSError:
-        print(f'encountered OSError while trying to save npy file {fpath}.  will retry after attempting to find and fix issues')
+        print(f'[{timestamp()}] encountered OSError while trying to save npy file {fpath}.  will retry after attempting to find and fix issues')
         wref = st.session_state.mmap_file_wref_lookup.get(fpath)
         if wref is not None:
-            print(f'retrieved weak reference to memory mapped file {fpath}')
+            print(f'[{timestamp()}] retrieved weak reference to memory mapped file {fpath}')
             if not references_dead_object(wref[0]):
-                print(f'object named {wref[1]} has been garbage collected (weak reference is referencing a dead object)')
+                print(f'[{timestamp()}] object named {wref[1]} has been garbage collected (weak reference is referencing a dead object)')
             if not wref[0]()._mmap.closed:
                 wref[0]()._mmap.close()
                 if wref[0]()._mmap.closed:
-                    print(f"Successfully closed memory mapped file {vars(wref[0]())['filename']} bound to key {wref[1]}")
+                    print(f"[{timestamp()}] Successfully closed memory mapped file {vars(wref[0]())['filename']} bound to key {wref[1]}")
                     del wref[0]
                     del st.session_state.mmap_file_wref_lookup[wref[0]]
 
         else:
-            print(f'could not find weak reference to {fpath}')
+            print(f'[{timestamp()}] could not find weak reference to {fpath}')
 
 
             clear_cache()
@@ -74,7 +74,7 @@ def save_to_npy(fpath, array):
         try:
             np.save(fpath, array)
         except OSError:
-                print(f'unable to save file {fpath}')
+                print(f'[{timestamp()}] unable to save file {fpath}')
 
 
 
@@ -163,7 +163,7 @@ def get_npy_properties(fpath_npy):
 def memmap_npy(fpath_npy, mode='r'):
     
     try:
-        assert os.path.isfile(fpath_npy), f'file not found: {fpath_npy}'
+        assert os.path.isfile(fpath_npy), f'[{timestamp()}] file not found: {fpath_npy}'
     except AssertionError as msg:
         print(msg)
 
@@ -206,9 +206,9 @@ def load_image(fImage=None, example_path='.', reload_previous=False):
        reload_previous = False
         
     if fImage is not None:
-        print('fImage IS NOT None')
+        print(f'[{timestamp()}] fImage IS NOT None')
     else:
-        print('fImage IS None')
+        print(f'[{timestamp()}] fImage IS None')
 
     if reload_previous:
 
@@ -217,7 +217,7 @@ def load_image(fImage=None, example_path='.', reload_previous=False):
         input_file_name = st.session_state.input_file_name
         input_source = st.session_state.input_source
         impath = st.session_state.input_file_path
-        print(f'reloading previous input')
+        print(f'[{timestamp()}] reloading previous input')
 
     else:
         if fImage is not None:            
@@ -264,10 +264,10 @@ def load_image(fImage=None, example_path='.', reload_previous=False):
         if input_key not in st.session_state.keys_to_npy:
             st.session_state.keys_to_npy[input_key] = tuple(files)  # make tuple to force copy and make immutable
 
-            print(f'checking if {fpath_u8} exists')
+            print(f'[{timestamp()}] checking if {fpath_u8} exists')
 
             if not all([os.path.isfile(fpath_u8), os.path.isfile(fpath_f32), os.path.isfile(fpath_f32_maxRGB)]):
-                print(f'Did not find existing npy files for image_input. Creating them now ...')
+                print(f'[{timestamp()}] Did not find existing npy files for image_input. Creating them now ...')
                 image_u8 = cv2.imread(st.session_state.input_file_path)#[:,:,[2,1,0]]
 
                 image_f32 = normalize_array(image_u8)

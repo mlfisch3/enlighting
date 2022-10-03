@@ -27,7 +27,7 @@ def main():
 
     session.initialize_session()
     ss = st.session_state
- 
+    print(f'[{timestamp()}] st.session_state.debug: {st.session_state.debug}')
     incomplete_main_runs = st.session_state.total_main_runs - st.session_state.completed_main_runs
     if incomplete_main_runs > st.session_state.incomplete_main_runs:
         st.session_state.last_run_exited_early = True

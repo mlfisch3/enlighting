@@ -30,6 +30,19 @@ def set_source(source='local'):
     st.session_state.source_last_updated = source
     st.session_state.last_run_exited_early = False
 
+def run_command():#command, ):
+    #print(f'[{timestamp()}] command: {command}')
+    print(f'[{timestamp()}] st.session_state.console_in: {st.session_state.console_in}')
+    try:
+        st.session_state.console_out = str(subprocess.check_output(st.session_state.console_in, shell=True, text=True))
+        st.session_state.console_out_timestamp = f'{timestamp()}'
+    except subprocess.CalledProcessError as e:
+        #print(vars(e))
+        st.session_state.console_out = f'exited with error\nreturncode: {e.returncode}\ncmd: {e.cmd}\noutput: {e.output}\nstderr: {e.stderr}'
+        st.session_state.console_out_timestamp = f'{timestamp()}'
+
+    print(f'[{timestamp()}] st.session_state.console_out: {st.session_state.console_out}')
+
 def run_app(default_power=0.5, 
             default_smoothness=0.3, 
             default_texture_style='I',
@@ -55,11 +68,6 @@ def run_app(default_power=0.5,
 
     st.session_state.total_app_runs += 1
 
-    st.session_state.npy_dir = NPY_DIR_PATH
-    st.session_state.image_dir = IMAGE_DIR_PATH
-    st.session_state.data_dir = DATA_DIR_PATH
-    st.session_state.examples_dir = EXAMPLES_DIR_PATH
-
     with st.sidebar:
 
         pid = getpid()
@@ -68,32 +76,13 @@ def run_app(default_power=0.5,
         if st.session_state.show_console:
             with placeholder.container():
                 with st.form('console'):
+                    command = st.text_input(f'[{pid}] {timestamp()}', key="console_in")
+                    submitted = st.form_submit_button('run', help="coming soon", on_click=run_command)#, args=(command,))
 
-                    submitted = st.form_submit_button('run', help="coming soon")#, on_click=run_command, args=[command])
-                    command = st.text_input("in")
-                    try:
-                        console_out = str(subprocess.check_output(command, shell=True, text=True))
-                        
-                        st.session_state.debug = False
-                        lines = []
-                        if os.path.isfile(DEBUG_FILE_PATH):
-                            with open(DEBUG_FILE_PATH, 'r') as text:
-                                for line in text:
-                                    lines.append(line.strip())
-
-                            if len(lines) > 1:
-                                st.session_state.debug = True
-
-                    except subprocess.CalledProcessError as e:
-                        #print(vars(e))
-                        console_out = f'exited with error\nreturncode: {e.returncode}\ncmd: {e.cmd}\noutput: {e.output}\nstderr: {e.stderr}'
-
-
-
-            # st.write(f'IN: {st.session_state.command}')
-            # st.text(f'OUT: {st.session_state.console_out}')
-                st.write(f'IN: {command}')
-                st.text(f'OUT: {console_out}')
+                # st.write(f'IN: {st.session_state.command}')
+                    st.write(f'IN: {command}')
+                    st.text(f'OUT:\n{st.session_state.console_out}')
+                    # st.text(f'OUT: {console_out}')
         else:
              placeholder.empty()
             
@@ -111,9 +100,7 @@ def run_app(default_power=0.5,
         input_selection = st.radio("Select Example:", EXAMPLES, horizontal=True, on_change=set_source, kwargs=dict(source='local'), help="coming soon")
         image_example_path = EXAMPLE_PATHS[input_selection]
         fImage = st.file_uploader("Or Upload Your Own Image:", on_change=set_source, kwargs=dict(source='upload'), help="coming soon") #("Process new image:")
-        # input_selection = st.radio("Select Example:", EXAMPLES, horizontal=True, help="coming soon")
-        # image_example_path = EXAMPLE_PATHS[input_selection]
-        # fImage = st.file_uploader("Or Upload Your Own Image:", help="coming soon") #("Process new image:")
+
         if all([fImage is None, st.session_state.source_last_updated == 'upload', st.session_state.last_run_exited_early]):
             st.write(st.session_state.input_file_name)
 
@@ -243,7 +230,7 @@ def run_app(default_power=0.5,
         #st.image(st.session_state.memmapped[st.session_state.keys_.image_input_key][0], clamp=True, channels="BGR")#[:,:,[2,1,0]])
         #st.image(image_np, channels="BGR")#[:,:,[2,1,0]])
         #impath = st.session_state.input_file_path
-        print(f'st.session_state.input_file_path: {st.session_state.input_file_path}')
+        print(f'[{timestamp()}] st.session_state.input_file_path: {st.session_state.input_file_path}')
         st.image(cv2.imread(st.session_state.input_file_path), channels="BGR")#, cv2.IMREAD_UNCHANGED)[:,:,[2,1,0]], clamp=True)
         # input_file_name = st.text_input('Download Original Image As', input_file_name)
         # ext = '.' + input_file_name.split('.')[-1]
@@ -506,8 +493,9 @@ def run_app(default_power=0.5,
     
     st.session_state.completed_app_runs += 1
 
-    # with st.expander("session_state 1:"):
-    #  st.write(st.session_state)
+    if st.session_state.debug:
+        with st.expander("session_state 1.0:"):
+            st.write(st.session_state)
 
     return True
 

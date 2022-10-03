@@ -1,7 +1,33 @@
 import streamlit as st
-from utils.config import NPY_DIR_PATH, IMAGE_DIR_PATH, DATA_DIR_PATH
+import os
+from utils.config import BASE_DIR_PATH, DEBUG_FILE_PATH, EXAMPLES_DIR_PATH, NPY_DIR_PATH, IMAGE_DIR_PATH, DATA_DIR_PATH
+
+
+def set_debug():
+
+    st.session_state.debug = False
+    if os.path.isfile(st.session_state.debug_file_path):
+        st.session_state.debug = True
 
 def initialize_session():
+
+    if 'base_dir' not in st.session_state:
+        st.session_state.base_dir_path = BASE_DIR_PATH
+
+    if 'examples_dir' not in st.session_state:
+        st.session_state.examples_dir = EXAMPLES_DIR_PATH
+        
+    if 'npy_dir' not in st.session_state:
+        st.session_state.npy_dir = NPY_DIR_PATH
+
+    if 'data_dir' not in st.session_state:
+        st.session_state.data_dir = DATA_DIR_PATH
+
+    if 'image_dir' not in st.session_state:
+        st.session_state.image_dir = IMAGE_DIR_PATH
+
+    if 'debug_file_path' not in st.session_state:
+        st.session_state.debug_file_path = DEBUG_FILE_PATH
 
     if 'debug' not in st.session_state:
         st.session_state.debug = False
@@ -70,17 +96,8 @@ def initialize_session():
     if 'console_out' not in st.session_state:
         st.session_state.console_out = ''
 
-    if 'command' not in st.session_state:
-        st.session_state.command = ''
-
-    if 'npy_dir' not in st.session_state:
-        st.session_state.npy_dir = NPY_DIR_PATH
-
-    if 'data_dir' not in st.session_state:
-        st.session_state.data_dir = DATA_DIR_PATH
-
-    if 'image_dir' not in st.session_state:
-        st.session_state.image_dir = IMAGE_DIR_PATH
+    if 'console_in' not in st.session_state:
+        st.session_state.console_in = ''
 
     if 'keys_to_npy' not in st.session_state:
         st.session_state.keys_to_npy = {}
@@ -114,6 +131,8 @@ def initialize_session():
 
     if 'exposure_ratios' not in st.session_state:
         st.session_state.exposure_ratios = {}
+
+    set_debug()
 
     # if 'active_keys' not in st.session_state:
     #     st.session_state.active_keys = {}
