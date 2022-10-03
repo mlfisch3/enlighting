@@ -10,7 +10,7 @@ from os import getpid
 import sys
 import gc
 from utils.io_tools import change_extension, load_binary, load_image, mkpath
-from utils.config import NPY_DIR_PATH, IMAGE_DIR_PATH, EXAMPLE_PATHS, EXAMPLES, DATA_DIR_PATH, EXAMPLES_DIR_PATH, DEBUG
+from utils.config import NPY_DIR_PATH, IMAGE_DIR_PATH, EXAMPLE_PATHS, EXAMPLES, DATA_DIR_PATH, EXAMPLES_DIR_PATH, DEBUG_FILE_PATH
 from utils.sodef import bimef
 from utils.array_tools import float32_to_uint8, uint8_to_float32, normalize_array, array_info, mono_float32_to_rgb_uint8
 from utils.logging import timestamp, log_memory

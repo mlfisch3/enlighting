@@ -2,9 +2,6 @@ import streamlit as st
 import os
 import sys
 
-
-
-
 BASE_DIR_PATH = os.path.split(sys.path[0])[0] # sys.path[0] returns absolute path to FILE main.py instead of current working directory.  unexpected behavior
 DEBUG_FILE_PATH = os.path.join(BASE_DIR_PATH, 'debug.txt')
 
