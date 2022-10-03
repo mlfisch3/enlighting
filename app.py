@@ -49,8 +49,6 @@ def run_app(default_power=0.5,
             default_exposure_ratio=-1, 
             default_color_gamma=0.3981):
 
-    st.session_state.debug = DEBUG
-
     if st.session_state.debug:
         with st.expander("session_state 0:"):
             st.write(st.session_state)
