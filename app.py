@@ -19,13 +19,6 @@ from utils.session import Keys
 import weakref
 from pathlib import Path
 
-def reset():
-    # pass
-    # if 'image_np' in st.session_state:
-    #     del st.session_state.image_np
-    if 'input_file_name' in st.session_state:
-        del st.session_state.input_file_name
-
 def set_source(source='local'):
     st.session_state.source_last_updated = source
     st.session_state.last_run_exited_early = False
@@ -76,7 +69,7 @@ def run_app(default_power=0.5,
         if st.session_state.show_console:
             with placeholder.container():
                 with st.form('console'):
-                    command = st.text_input(f'[{pid}] {timestamp()}', key="console_in")
+                    command = st.text_input(f'[{pid}] {timestamp()}', str(st.session_state.console_in), key="console_in")
                     submitted = st.form_submit_button('run', help="coming soon", on_click=run_command)#, args=(command,))
 
                 # st.write(f'IN: {st.session_state.command}')
