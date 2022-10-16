@@ -134,7 +134,7 @@ def run_app(default_power=0.5,
                 #print(f'[{timestamp()}|app.py|input_example_path|116]')
             with source_tab1:
                 report_runs('app.py|input_example_path|143')
-                fImage = st.file_uploader("Or Upload Your Own Image:", on_change=set_source, kwargs=dict(source='upload'), help="coming soon", key=st.session_state.upload_key) #("Process new image:")
+                fImage = st.file_uploader("Upload Your Own Image:", on_change=set_source, kwargs=dict(source='upload'), help="coming soon", key=st.session_state.upload_key) #("Process new image:")
                 #print(f'[{timestamp()}|app.py|st.file_uploader|119]')
                 report_runs('app.py|st.file_uploader|147')
 
