@@ -17,7 +17,6 @@ import gc
 import sys
 import datetime
 from copy import copy
-import utils.session
 from utils import session
 from app import run_app
 from utils.logging import timestamp, log_memory
@@ -25,9 +24,22 @@ from utils.logging import timestamp, log_memory
 
 def main():
 
+    total_start = datetime.datetime.now()
+    # print('▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲')
+    # print('▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼')
+    # print('▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲')
+
+    print('\n')
+    print('▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼')
+    log_memory('main|run_app|B')
     session.initialize_session()
+
+    #print(f'[{timestamp()}|main.py|37] TYPE (st.session_state.state_history) : {type(st.session_state.state_history)}')
+    #print(f'[{timestamp()}|main.py|37]')
+    session.report_runs('main.py|39')
     ss = st.session_state
-    print(f'[{timestamp()}] st.session_state.debug: {st.session_state.debug}')
+    #print(type(ss))
+    #print(f'[{timestamp()}] st.session_state.debug: {st.session_state.debug}')
     incomplete_main_runs = st.session_state.total_main_runs - st.session_state.completed_main_runs
     if incomplete_main_runs > st.session_state.incomplete_main_runs:
         st.session_state.last_run_exited_early = True
@@ -47,22 +59,22 @@ def main():
     else:
         st.session_state.show_console = False
 
-    print(f'[{timestamp()}] st.session_state.show_console: {st.session_state.show_console}')
-    print(f"[{timestamp()}] st.session_state.query_params.console: {st.session_state.query_params['console']}")
-    print(f'[{timestamp()}] ------------ QUERY PARAMS (local) -----------------')
-    print(f'[{timestamp()}] {query_params}')
-    print(f'[{timestamp()}] ------------ QUERY PARAMS (global) -----------------')
-    print(f'[{timestamp()}] {ss.query_params}')
+    #print(f'[{timestamp()}] st.session_state.show_console: {st.session_state.show_console}')
+    #print(f"[{timestamp()}] st.session_state.query_params.console: {st.session_state.query_params['console']}")
+    # print(f'[{timestamp()}] ------------ QUERY PARAMS (local) -----------------')
+    # print(f'[{timestamp()}] {query_params}')
+    # print(f'[{timestamp()}] ------------ QUERY PARAMS (global) -----------------')
+    # print(f'[{timestamp()}] {ss.query_params}')
+    #print(f'[{timestamp()}|main.py|67]')
+    session.report_runs('main.py|69')
 
-    total_start = datetime.datetime.now()
-    log_memory('main|run_app|B')
-    print(f'[{timestamp()}] total_main_runs: {ss.total_main_runs}')
-    print(f'[{timestamp()}] completed_main_runs: {ss.completed_main_runs}')
-    print(f'[{timestamp()}] incomplete_main_runs (global): {ss.incomplete_main_runs}')
-    print(f'[{timestamp()}] incomplete_main_runs (local): {incomplete_main_runs}')
-    print(f'[{timestamp()}] auto_reloads: {ss.auto_reloads}')
-    print(f'[{timestamp()}] total_app_runs: {ss.total_app_runs}')
-    print(f'[{timestamp()}] completed_app_runs: {ss.completed_app_runs}')
+    #print(f'[{timestamp()}] total_main_runs: {ss.total_main_runs}')
+    #print(f'[{timestamp()}] completed_main_runs: {ss.completed_main_runs}')
+    # print(f'[{timestamp()}] incomplete_main_runs (global): {ss.incomplete_main_runs}')
+    # print(f'[{timestamp()}] incomplete_main_runs (local): {incomplete_main_runs}')
+    # print(f'[{timestamp()}] auto_reloads: {ss.auto_reloads}')
+    #print(f'[{timestamp()}] total_app_runs: {ss.total_app_runs}')
+    #print(f'[{timestamp()}] completed_app_runs: {ss.completed_app_runs}')
 
     # try:
     #     assert run_app(), f'[{timestamp()}] Process was stopped before completing.  Re-running ...'
@@ -76,9 +88,15 @@ def main():
     log_memory('main|run_app|E')
     total_end = datetime.datetime.now()
     total_process_time = (total_end - total_start).total_seconds()
-    print(f'[{timestamp()}]  Total processing time: {total_process_time:.5f} s')
 
+    print(f'[{timestamp()}]  Total processing time: {total_process_time:.5f} s')
     ss.completed_main_runs += 1
+    #print(f'[{timestamp()}|main.py|93]')
+    session.report_runs('main.py|95')
+    print(st.session_state.state_history)
+    print('▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲')
+    print('\n')
+
     sys.stdout.flush()
 
 if __name__ == '__main__':

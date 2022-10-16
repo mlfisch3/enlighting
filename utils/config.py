@@ -3,7 +3,7 @@ import os
 import sys
 
 BASE_DIR_PATH = os.path.split(sys.path[0])[0] # sys.path[0] returns absolute path to FILE main.py instead of current working directory.  unexpected behavior
-DEBUG_FILE_PATH = os.path.join(BASE_DIR_PATH, 'debug.txt')
+DEBUG_FILE_PATH = os.path.join(BASE_DIR_PATH, 'debug.txt')  # debug mode is on/off depending on existance/absence of a file with this exact filepath name 
 
 NPY_DIR_PATH = os.path.join(BASE_DIR_PATH, 'NPY')
 IMAGE_DIR_PATH = os.path.join(BASE_DIR_PATH, 'IMAGES')

@@ -1,6 +1,16 @@
 import streamlit as st
+import pandas as pd
 import os
+import sys
+from random import randint
+from utils.logging import timestamp
 from utils.config import BASE_DIR_PATH, DEBUG_FILE_PATH, EXAMPLES_DIR_PATH, NPY_DIR_PATH, IMAGE_DIR_PATH, DATA_DIR_PATH
+
+pd.options.display.width = sys.maxsize
+pd.options.display.max_colwidth = 9999
+pd.options.display.colheader_justify ='center'
+pd.options.display.max_rows = 500
+
 
 
 def set_debug():
@@ -9,8 +19,86 @@ def set_debug():
     if os.path.isfile(st.session_state.debug_file_path):
         st.session_state.debug = True
 
+
+def update_state_history(tag=''):
+
+    update = {
+                "timestamp" : [timestamp()],
+                "run_counts (main(), run_app()):" : f'({st.session_state.completed_main_runs}/{st.session_state.total_main_runs}) ({st.session_state.completed_app_runs}/{st.session_state.total_app_runs})',
+                "tag" : [tag],
+                "input_key" : [st.session_state.input_key],
+                "input_source" : [st.session_state.input_source],
+                "source_last_updated" : [st.session_state.source_last_updated],
+                "fImage_is_not_None" : [st.session_state.fImage_is_not_None],
+                "input_file_path" : [st.session_state.input_file_path],
+                "upload_key" : [st.session_state.upload_key]
+            }
+
+    update_df = pd.DataFrame(data=update)
+    
+    #print(update_df)
+
+    # if 'state_history' not in st.session_state:
+    #     st.session_state.state_history = update_df
+        
+    # else:    
+    #     st.session_state.state_history = pd.concat([st.session_state.state_history, update_df]).reset_index(drop=True)
+
+    st.session_state.state_history = pd.concat([st.session_state.state_history, update_df]).reset_index(drop=True)
+
+
+def report_runs(tag=''):
+    
+   #  print(f'[{timestamp()}|report_runs] RUNS    main ({st.session_state.completed_main_runs}/{st.session_state.total_main_runs})\
+   # app ({st.session_state.completed_app_runs}/{st.session_state.total_app_runs})')
+   #  print(f'[{timestamp()}|report_runs] st.session_state.fImage_is_not_None: {st.session_state.fImage_is_not_None}') 
+   #  print(f'[{timestamp()}|report_runs] st.session_state.input_file_path: {st.session_state.input_file_path}') 
+   #  print(f'[{timestamp()}|report_runs] st.session_state.input_source: {st.session_state.input_source}') 
+   #  print(f'[{timestamp()}|report_runs] st.session_state.input_key: {st.session_state.input_key}')
+   #  print(f'[{timestamp()}|report_runs] st.session_state.source_last_updated: {st.session_state.source_last_updated}')
+   #  print(f'[{timestamp()}|report_runs] st.session_state.upload_key: {st.session_state.upload_key}')
+
+   #  if 'user_upload' in st.session_state:
+   #      if st.session_state.user_upload is not None:
+   #          print(f'[{timestamp()}|report_runs] st.session_state.user_upload IS NONE')
+   #      else:
+   #          print(f'[{timestamp()}|report_runs] st.session_state.user_upload IS NOT NONE')
+   #  else:
+   #          print(f'[{timestamp()}|report_runs] st.session_state.user_upload IS UNDEFINED')
+
+    # if st.session_state.fImage is not None:
+    #     input_file_name = str(st.session_state.fImage.__dict__['name'])
+    #     print(f'[{timestamp()}|report_runs] input_file_name: {input_file_name}')
+
+    update_state_history(tag)
+
+
 def initialize_session():
 
+    # if 'state_history' not in st.session_state:
+    #     st.session_state.state_history = pd.DataFrame(data={
+    #                                                             "timestamp" : [timestamp()],
+    #                                                             "tag" : ['session.py|initialize_session|77'],
+    #                                                             "input_key" : [''],
+    #                                                             "input_source" : [''],
+    #                                                             "source_last_updated" : [''],
+    #                                                             "fImage_is_not_None" : [''],
+    #                                                             "input_file_path" : [''],
+    #                                                             "upload_key" : [''],
+    #                                                         }
+    #                                                     )
+    # else:
+    #     st.session_state.state_history = pd.DataFrame(data={
+    #                                                             "timestamp" : [timestamp()],
+    #                                                             "tag" : ['session.py|initialize_session|89'],
+    #                                                             "input_key" : st.session_state.input_key,
+    #                                                             "input_source" : st.session_state.input_source,
+    #                                                             "source_last_updated" : st.session_state.source_last_updated,
+    #                                                             "fImage_is_not_None" : st.session_state.fImage_is_not_None,
+    #                                                             "input_file_path" : st.session_state.input_file_path,
+    #                                                             "upload_key" : st.session_state.upload_key,
+    #                                                         }
+    #                                                     )
     if 'base_dir' not in st.session_state:
         st.session_state.base_dir_path = BASE_DIR_PATH
 
@@ -48,6 +136,17 @@ def initialize_session():
     if 'total_main_runs' not in st.session_state:
         st.session_state.total_main_runs = 0
 
+    if 'fImage' not in st.session_state:
+        st.session_state.fImage = None
+
+    # if 'user_upload' not in st.session_state:
+    #     st.session_state.user_upload = None
+    if 'upload_key' not in st.session_state:
+        st.session_state.upload_key = str(randint(1000, 1000000))
+
+    if 'fImage_is_not_None' not in st.session_state:
+        st.session_state.fImage_is_not_None = False
+
     if 'completed_main_runs' not in st.session_state:
         st.session_state.completed_main_runs = 0
 
@@ -75,6 +174,15 @@ def initialize_session():
     if 'memmapped' not in st.session_state:
         st.session_state.memmapped = {}
 
+    if 'input_selection' not in st.session_state:
+        st.session_state.input_selection = ''
+
+    if 'input_example_path' not in st.session_state:
+        st.session_state.input_example_path = ''
+
+    if 'input_data_path' not in st.session_state:
+        st.session_state.input_data_path = ''
+
     if 'input_key' not in st.session_state:
         st.session_state.input_key = ''
 
@@ -85,10 +193,13 @@ def initialize_session():
         st.session_state.input_file_path = ''
 
     if 'input_source' not in st.session_state:
-        st.session_state.input_source = ''
+        st.session_state.input_source = 'E'
 
     if 'input_file_ext' not in st.session_state:
         st.session_state.input_file_ext = ''
+
+    if 'input_shape' not in st.session_state:
+        st.session_state.input_shape = (-1,-1,-1)
 
     if 'show_console' not in st.session_state:
         st.session_state.show_console = False
@@ -104,6 +215,9 @@ def initialize_session():
 
     if 'keys_to_images' not in st.session_state:
         st.session_state.keys_to_images = {}
+
+    if 'keys_to_shape' not in st.session_state:
+        st.session_state.keys_to_shape = {}
 
     if 'named_keys' not in st.session_state:
         st.session_state.named_keys = {}
@@ -134,6 +248,17 @@ def initialize_session():
 
     set_debug()
 
+    st.session_state.state_history = pd.DataFrame(data={
+                                                            "timestamp" : [timestamp()],
+                                                            "tag" : ['session.py|initialize_session|236'],
+                                                            "input_key" : st.session_state.input_key,
+                                                            "input_source" : st.session_state.input_source,
+                                                            "source_last_updated" : st.session_state.source_last_updated,
+                                                            "fImage_is_not_None" : st.session_state.fImage_is_not_None,
+                                                            "input_file_path" : st.session_state.input_file_path,
+                                                            "upload_key" : st.session_state.upload_key,
+                                                        }
+                                                    )
     # if 'active_keys' not in st.session_state:
     #     st.session_state.active_keys = {}
     #     st.session_state.active_keys['image_input'] = ('-1','-1','-1')       #  input_file_name: load_image()  -->  image_np, image_01, image_01_maxRGB
@@ -185,7 +310,6 @@ class Keys:
         self.b = b
         self.min_gain = min_gain
         self.max_gain = max_gain
-
         self.image_reduced_key = f'{self.image_input_key}{int(100*scale):02d}'
         self.gradients_key = f'{self.image_reduced_key}G'
         self.convolutions_key = f'{self.gradients_key}C{self.kernel_parallel}{self.kernel_orthogonal}'
@@ -194,12 +318,14 @@ class Keys:
         self.total_variation_map_key = f'{self.texture_weights_key}VM'    
         self.smoother_output_fullsize_key = f'{self.texture_weights_key}{int(1000*self.lamda):003d}'
         self.fine_texture_map_key = f'{self.smoother_output_fullsize_key}FM'
+        self.fusion_weights_key = f'{self.smoother_output_fullsize_key}{int(1000*self.power):003d}'
         self.exposure_ratio_in_key = f'{self.smoother_output_fullsize_key}{self.exposure_ratio_in}{self.min_gain}{self.max_gain}{int(1000*self.a):0004d}{int(10000*self.b):00005d}'
         self.exposure_ratio_out_key = f'{self.exposure_ratio_in_key}R'
-        self.fusion_weights_key = f'{self.smoother_output_fullsize_key}{int(1000*self.power):003d}'
         self.adjusted_exposure_key = f'{self.exposure_ratio_in_key}{int(1000*self.color_gamma):003d}'  # include camera parameter values a & b for completeness
-        self.enhancement_map_key = f'{self.fusion_weights_key}EM'
-        self.enhanced_image_key = f'{self.fusion_weights_key}EI'
+        self.enhanced_image_key = f'{self.adjusted_exposure_key}{int(1000*self.power):003d}EI'  # depends on all parameters
+        self.enhancement_map_key = f'{self.enhanced_image_key}EM'
+
+
         
 
     def __repr__(self):

@@ -193,72 +193,29 @@ def get_keyed_variable(prefix_key, function, args, keyable_argvals, keyname):
     return st.session_state.memmapped[this_key]
 
 
-def load_image(fImage=None, example_path='.', reload_previous=False):
+def load_image(input_file_path, input_source):
 
-    npy_dir = st.session_state.npy_dir
-    image_dir = st.session_state.image_dir
-    data_dir = st.session_state.data_dir
-    mkpath(npy_dir)
-    mkpath(image_dir)
-    mkpath(data_dir)
+    print('─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐')
 
-    if st.session_state.completed_main_runs == 0:
-       reload_previous = False
-        
-    if fImage is not None:
-        print(f'[{timestamp()}] fImage IS NOT None')
-    else:
-        print(f'[{timestamp()}] fImage IS None')
+    OS_NAME = os.name
+    if OS_NAME == 'posix':
+        input_file_name = input_file_path.split('/')[-1]
+    elif OS_NAME == 'nt':
+        input_file_name = input_file_path.split('\\')[-1]
 
-    if reload_previous:
+    st.session_state.input_file_name = input_file_name 
+    st.session_state.input_file_ext = input_file_name.split('.')[-1]
 
-        st.session_state.auto_reloads += 1
-        input_key = st.session_state.input_key
-        input_file_name = st.session_state.input_file_name
-        input_source = st.session_state.input_source
-        impath = st.session_state.input_file_path
-        print(f'[{timestamp()}] reloading previous input')
-
-    else:
-        if fImage is not None:            
-            input_source = 'U'  # user uploaded
-            input_file_name = str(fImage.__dict__['name'])
-            impath = os.path.join(data_dir, input_file_name)
-            if not os.path.isfile(impath):
-                np_array = np.frombuffer(fImage.getvalue(), np.uint8)
-                image_u8 = cv2.imdecode(np_array, cv2.IMREAD_COLOR)                
-                st.session_state.saved_images[impath] = cv2.imwrite(impath, image_u8)
-                del np_array, image_u8
-
-            st.session_state.input_file_path = impath
-        else:
-            OS_NAME = os.name
-         #   print(f'[{timestamp()}] os.name: {OS_NAME}')          
-            if OS_NAME == 'posix':
-                input_file_name = example_path.split('/')[-1]
-            elif OS_NAME == 'nt':
-                input_file_name = example_path.split('\\')[-1]
-
-            input_source = 'E'  # example image
-            st.session_state.input_file_path = example_path
-            #print(f'[{timestamp()}] input_file_name: {input_file_name}')   
-
-        #print(f'[{timestamp()}] input_file_name: {input_file_name}')            
-        st.session_state.input_file_name = input_file_name
-        #print(f'[{timestamp()}] st.session_state.input_file_name: {st.session_state.input_file_name}')   
-        st.session_state.input_file_ext = input_file_name.split('.')[-1]
-        st.session_state.input_source = input_source
-
-        input_key = (input_file_name + input_source).replace('.','')
-        st.session_state.input_key = input_key
-        st.session_state.keys_to_images[input_key] = st.session_state.input_file_path
+    input_key = (input_file_name + input_source).replace('.','')
+    st.session_state.input_key = input_key
+    st.session_state.keys_to_images[input_key] = input_file_path
 
     # save input arrays to disk
     if input_key not in st.session_state.memmapped:
 
-        fpath_u8 = os.path.join(npy_dir, input_key + '_u8.npy')
-        fpath_f32 = os.path.join(npy_dir, input_key + '_f32.npy')
-        fpath_f32_maxRGB = os.path.join(npy_dir, input_key + '_f32maxRGB.npy')
+        fpath_u8 = os.path.join(st.session_state.npy_dir, input_key + '_u8.npy')
+        fpath_f32 = os.path.join(st.session_state.npy_dir, input_key + '_f32.npy')
+        fpath_f32_maxRGB = os.path.join(st.session_state.npy_dir, input_key + '_f32maxRGB.npy')
 
         files = [fpath_u8, fpath_f32, fpath_f32_maxRGB]    
         if input_key not in st.session_state.keys_to_npy:
@@ -269,11 +226,11 @@ def load_image(fImage=None, example_path='.', reload_previous=False):
             if not all([os.path.isfile(fpath_u8), os.path.isfile(fpath_f32), os.path.isfile(fpath_f32_maxRGB)]):
                 print(f'[{timestamp()}] Did not find existing npy files for image_input. Creating them now ...')
                 image_u8 = cv2.imread(st.session_state.input_file_path)#[:,:,[2,1,0]]
+                #st.session_state.keys_to_shape[input_key] = image_u8.shape
 
                 image_f32 = normalize_array(image_u8)
                 image_f32_maxRGB = image_f32.max(axis=2)
                 
-                shape = image_u8.shape
                 print(f'[{timestamp()}] saving image_u8 array to new npy file: {fpath_u8}')           
                 save_to_npy(fpath_u8, image_u8)
                 del image_u8
@@ -284,7 +241,7 @@ def load_image(fImage=None, example_path='.', reload_previous=False):
                 save_to_npy(fpath_f32_maxRGB, image_f32_maxRGB)
                 del image_f32_maxRGB
 
-        # open saved arrays as memory mapps
+        # open saved arrays as memory maps
         image_u8_ = np.lib.format.open_memmap(fpath_u8, mode='r', dtype=np.uint8)
         st.session_state.mmap_file_wref_lookup[fpath_u8] = (weakref.ref(image_u8_), 'image_u8_')
 
@@ -295,6 +252,7 @@ def load_image(fImage=None, example_path='.', reload_previous=False):
         st.session_state.mmap_file_wref_lookup[fpath_f32_maxRGB] = (weakref.ref(image_f32_maxRGB_), 'image_f32_maxRGB_')
 
         st.session_state.memmapped[input_key] = (image_u8_, image_f32_, image_f32_maxRGB_)
-        
+    
+    print('─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘')
     #return st.session_state.memmapped[input_key]
     return input_key
