@@ -93,7 +93,7 @@ def run_app(default_power=0.5,
             st.markdown("<h1 style='text-align: left; color: white;'>Welcome to Light-Fix</h1>", unsafe_allow_html=True)
             st.markdown("<h3 style='text-align: left; color: yellow'>Check out the examples to see what's possible</h3>", unsafe_allow_html=True)
 
-            st.markdown("<h3 style='text-align: left; color: yellow'>Upload your own image to enhance</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='text-align: left; color: yellow'>Upload your own images to enhance</h3>", unsafe_allow_html=True)
         pid = getpid()
         placeholder = st.empty()
         if st.session_state.show_console:
