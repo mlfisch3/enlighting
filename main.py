@@ -1,7 +1,6 @@
 import streamlit as st
 
-VERSION = '5'
-title = f'Enlighting{VERSION}'
+title = f'Light-Fix'
 st.set_page_config(page_title=title, layout="wide")
 
 hide_streamlit_style = """
