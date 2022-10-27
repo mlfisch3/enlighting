@@ -1,0 +1,15 @@
+[runner]
+fastReruns = false
+[server]
+headless = true
+runOnSave = true
+port = 5001
+enableCORS = false
+enableXsrfProtection=false
+[theme]
+primaryColor="#F63366"
+backgroundColor="#0e1117"
+secondaryBackgroundColor="#31333F"
+textColor="#fafafa"
+font="sans serif"
+

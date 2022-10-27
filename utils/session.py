@@ -11,7 +11,25 @@ pd.options.display.max_colwidth = 9999
 pd.options.display.colheader_justify ='center'
 pd.options.display.max_rows = 500
 
-
+default_granularity=0.1
+default_power=0.5
+default_smoothness=0.3
+default_texture_style='I'
+default_kernel_parallel=5
+default_kernel_orthogonal=1
+default_sharpness=0.001
+CG_TOL=0.1
+LU_TOL=0.015
+MAX_ITER=50
+FILL=50
+default_dim_size=(50)
+default_dim_threshold=0.5
+default_a=-0.3293
+default_b=1.1258
+default_lo=1
+default_hi=7
+default_exposure_ratio_in=-1
+default_color_gamma=0.3981
 
 def set_debug():
 
@@ -35,15 +53,6 @@ def update_state_history(tag=''):
             }
 
     update_df = pd.DataFrame(data=update)
-    
-    #print(update_df)
-
-    # if 'state_history' not in st.session_state:
-    #     st.session_state.state_history = update_df
-        
-    # else:    
-    #     st.session_state.state_history = pd.concat([st.session_state.state_history, update_df]).reset_index(drop=True)
-
     st.session_state.state_history = pd.concat([st.session_state.state_history, update_df]).reset_index(drop=True)
 
 
@@ -99,6 +108,23 @@ def initialize_session():
     #                                                             "upload_key" : st.session_state.upload_key,
     #                                                         }
     #                                                     )
+
+
+    if 'granularity_options' not in st.session_state:
+        st.session_state.granularity_options = ('standard', 'boost', 'max')
+    
+    if 'granularity_options_index' not in st.session_state:
+        st.session_state.granularity_options_index = 0
+
+    if 'granularity_dict' not in st.session_state:
+        st.session_state.granularity_dict = {'standard': 0.1, 'boost': 0.3, 'max': 0.5}
+
+    if 'viewer_options' not in st.session_state:
+        st.session_state.viewer_options = ("Enhanced Image", "Original vs Enhanced", "Comparisons (interactive)", "Show All Processing Steps")
+
+    if 'viewer_selection_index' not in st.session_state:
+        st.session_state.viewer_selection_index = 1     
+
     if 'base_dir' not in st.session_state:
         st.session_state.base_dir_path = BASE_DIR_PATH
 
@@ -129,6 +155,18 @@ def initialize_session():
     if 'data_checked' not in st.session_state:
         st.session_state.data_checked = False
 
+    if 'left_image_selection' not in st.session_state:
+        st.session_state.left_image_selection = "Original Image"
+        
+    if 'right_image_selection' not in st.session_state:
+        st.session_state.right_image_selection = "Enhanced Image"     
+
+    if 'left_image_selection_index' not in st.session_state:
+        st.session_state.left_image_selection_index = 0
+
+    if 'right_image_selection_index' not in st.session_state:
+        st.session_state.right_image_selection_index = 1
+
     if 'query_params' not in st.session_state:
         st.session_state.query_params = {}
         st.session_state.query_params['console'] = False
@@ -139,8 +177,6 @@ def initialize_session():
     if 'fImage' not in st.session_state:
         st.session_state.fImage = None
 
-    # if 'user_upload' not in st.session_state:
-    #     st.session_state.user_upload = None
     if 'upload_key' not in st.session_state:
         st.session_state.upload_key = str(randint(1000, 1000000))
 
@@ -201,6 +237,15 @@ def initialize_session():
     if 'input_shape' not in st.session_state:
         st.session_state.input_shape = (-1,-1,-1)
 
+    if 'cache_clearance' not in st.session_state:
+        st.session_state.cache_clearance = False
+    else:
+        st.session_state.cache_clearance = False
+
+    if 'show_resource_usage' not in st.session_state:
+        st.session_state.show_resource_usage = False
+    else:
+        st.session_state.show_resource_usage = False
     if 'show_console' not in st.session_state:
         st.session_state.show_console = False
 
@@ -237,11 +282,27 @@ def initialize_session():
     if 'saved_images' not in st.session_state:
         st.session_state.saved_images = {}
 
+    if 'paths' not in st.session_state:
+        st.session_state.paths = {}
+
     # if 'last_image_key' not in st.session_state:
     #     st.session_state.last_image_key = ''
 
     if 'keys_' not in st.session_state:
-        st.session_state.keys_ = {}
+        st.session_state.keys_ = Keys("initializing", 
+                                     default_granularity, 
+                                     default_kernel_parallel, 
+                                     default_kernel_orthogonal,
+                                     default_sharpness, 
+                                     default_texture_style, 
+                                     default_smoothness, 
+                                     default_power, 
+                                     default_a,
+                                     default_b,
+                                     default_exposure_ratio_in, 
+                                     default_color_gamma,
+                                     default_lo,
+                                     default_hi)
 
     if 'exposure_ratios' not in st.session_state:
         st.session_state.exposure_ratios = {}
@@ -259,25 +320,6 @@ def initialize_session():
                                                             "upload_key" : st.session_state.upload_key,
                                                         }
                                                     )
-    # if 'active_keys' not in st.session_state:
-    #     st.session_state.active_keys = {}
-    #     st.session_state.active_keys['image_input'] = ('-1','-1','-1')       #  input_file_name: load_image()  -->  image_np, image_01, image_01_maxRGB
-    #     st.session_state.active_keys['image_reduced'] = '-1'            #  image_01_maxRGB, scaling: imresize() --> image_01_maxRGB_reduced
-    #     st.session_state.active_keys['gradients'] = ('-1','-1')        #  image_01_maxRGB_reduced: delta() --> gradient_v, gradient_h
-    #     st.session_state.active_keys['convolutions'] = ('-1','-1')     #   gradient_v, gradient_h, kernel_shape: convolve()   -->  convolved_v, convolved_h
-    #     st.session_state.active_keys['texture_weights'] = ('-1','-1')  #   gradient_v, gradient_h, convolved_v, convolved_h, sharpness, texture_style:  calculate_texture_weights() --> texture_weights_v, texture_weights_h
-    #     st.session_state.active_keys['A'] = ('-1')                     #  texture_weights_v, texture_weights_h, lamda:   construct_map_cyclic() --> A
-    #     st.session_state.active_keys['image_01_maxRGB_reduced_smooth'] = ('-1')  #  A, image_01_maxRGB_reduced: solve_sparse_system() --> image_01_maxRGB_reduced_smooth
-    #     st.session_state.active_keys['illumination_map'] = ('-1')                #  image_01_maxRGB_reduced_smooth: imresize()  --> image_01)maxRGB_smooth --> illumination_map
-    #     st.session_state.active_keys['gradients_fullsize'] = ('-1','-1')         #  gradient_v, gradient_h: imresize()  -->   gradient_v_fullsize, gradient_h_fullsize
-    #     st.session_state.active_keys['convolutions_fullsize'] = ('-1','-1')     # 
-    #     st.session_state.active_keys['texture_weights_fullsize'] = ('-1','-1')  #   texture_weights_v, texture_weights_h: imresize()  -->    texture_weights_v_fullsize, texture_weights_h_fullsize
-    #     st.session_state.active_keys['smoother_output_fullsize'] = ('-1')       #   illumination_map, texture_weights_v_fullsize, texture_weights_h_fullsize, gradient_v_fullsize, gradient_h_fullsize
-    #     st.session_state.active_keys['fusion_weights'] = ('-1')                 #   illumination_map, power:  calculate_fusion_weights()  --> fusion_weights
-    #     st.session_state.active_keys['adjusted_exposure_params'] = ('-1')        #     exposure_ratio, color_gamma, lo, hi
-    #     st.session_state.active_keys['image_adjusted_exposure'] = ('-1')        #   image_np, exposure_ratio, color_gamma, lo, hi  --> image_exposure_adjusted, exposure_ratio_auto
-    #     st.session_state.active_keys['enhancement_output'] = ('-1')             #   fusion_weights, image_np, image_exposure_adjusted  fuse_image() --->  enhancement_map, enhanced_image
-
 
 class Keys:
 
@@ -326,10 +368,22 @@ class Keys:
         self.enhancement_map_key = f'{self.enhanced_image_key}EM'
 
 
-        
-
     def __repr__(self):
+
         output_str = f'image_input_key: {self.image_input_key}                                    \n'
+        output_str += f'scale: {self.scale}                                                       \n'
+        output_str += f'kernel_parallel: {self.kernel_parallel}                                                    \n'
+        output_str += f'kernel_orthogonal: {self.kernel_orthogonal}                                                    \n'
+        output_str += f'sharpness: {self.sharpness}                                                    \n'
+        output_str += f'texture_style: {self.texture_style}                                                    \n'
+        output_str += f'lamda: {self.lamda}                                                    \n'
+        output_str += f'power: {self.power}                                                    \n'
+        output_str += f'exposure_ratio_in: {self.exposure_ratio_in}                                                    \n'
+        output_str += f'color_gamma: {self.color_gamma}                                                    \n'
+        output_str += f'a: {self.a}                                                    \n'
+        output_str += f'b: {self.b}                                                    \n'
+        output_str += f'min_gain: {self.min_gain}                                                    \n'
+        output_str += f'max_gain: {self.max_gain}                                                    \n'                           
         output_str += f'gradients_key: {self.gradients_key}                                       \n'
         output_str += f'convolutions_key: {self.convolutions_key}                                 \n'
         output_str += f'texture_weights_key: {self.texture_weights_key}                           \n'

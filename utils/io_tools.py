@@ -218,7 +218,7 @@ def load_image(input_file_path, input_source):
         fpath_f32_maxRGB = os.path.join(st.session_state.npy_dir, input_key + '_f32maxRGB.npy')
 
         files = [fpath_u8, fpath_f32, fpath_f32_maxRGB]    
-        if input_key not in st.session_state.keys_to_npy:
+        if input_key not in st.session_state.keys_to_npy:  # should only be true if the input key hasn't been processed before
             st.session_state.keys_to_npy[input_key] = tuple(files)  # make tuple to force copy and make immutable
 
             print(f'[{timestamp()}] checking if {fpath_u8} exists')

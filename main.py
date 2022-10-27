@@ -53,10 +53,25 @@ def main():
         ss.query_params[k] = v[0]
         ss.query_params.setdefault(k,v[0])
 
+    if 'cache' in query_params:
+        st.session_state.cache_clearance = query_params['cache'][0]
+    else:
+        st.session_state.cache_clearance = False
+
+    if 'resources' in query_params:
+        st.session_state.show_resource_usage = query_params['resources'][0]
+    else:
+        st.session_state.show_resource_usage = False
+
     if 'console' in query_params:
         st.session_state.show_console = query_params['console'][0]
     else:
         st.session_state.show_console = False
+
+    if 'debug' in query_params:
+        st.session_state.debug = query_params['debug'][0]
+    else:
+        st.session_state.debug = False
 
     #print(f'[{timestamp()}] st.session_state.show_console: {st.session_state.show_console}')
     #print(f"[{timestamp()}] st.session_state.query_params.console: {st.session_state.query_params['console']}")

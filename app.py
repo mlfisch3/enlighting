@@ -45,13 +45,11 @@ def set_source(source='local'):
     print('\n')
 
 def run_command():#command, ):
-    #print(f'[{timestamp()}] command: {command}')
     print(f'[{timestamp()}] st.session_state.console_in: {st.session_state.console_in}')
     try:
         st.session_state.console_out = str(subprocess.check_output(st.session_state.console_in, shell=True, text=True))
         st.session_state.console_out_timestamp = f'{timestamp()}'
     except subprocess.CalledProcessError as e:
-        #print(vars(e))
         st.session_state.console_out = f'exited with error\nreturncode: {e.returncode}\ncmd: {e.cmd}\noutput: {e.output}\nstderr: {e.stderr}'
         st.session_state.console_out_timestamp = f'{timestamp()}'
 
@@ -78,17 +76,16 @@ def run_app(default_power=0.5,
 
     print('══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗')
 
-#    print('╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩')
     if st.session_state.debug:
         with st.expander("session_state 0:"):
             st.write(st.session_state)
 
     st.session_state.total_app_runs += 1
 
-    #print(f'[{timestamp()}|app.py|77]')
     report_runs('app.py|run_app|105')
     container = st.sidebar.container()
-    with st.sidebar:
+    with container:
+    #with st.sidebar.container():
         with st.expander("About", expanded=True):
             st.markdown("<h1 style='text-align: left; color: white;'>Welcome to Light-Fix</h1>", unsafe_allow_html=True)
             st.markdown("<h3 style='text-align: left; color: yellow'>Check out the examples to see what's possible</h3>", unsafe_allow_html=True)
@@ -117,26 +114,27 @@ def run_app(default_power=0.5,
             clear_cache()
             st.session_state.low_resources = False
 
-        with st.expander(f'{Process(pid).memory_info()[0]/float(2**20):.2f}'):
+        if st.session_state.show_resource_usage:
+            with st.expander(f'{Process(pid).memory_info()[0]/float(2**20):.2f}'):
+                with st.form("Clear"):
+                    st.session_state.cache_checked = st.checkbox("Clear Cache", help="coming soon", value=False)
+                    st.session_state.data_checked = st.checkbox("Clear Data", help="coming soon", value=False)
+                    st.form_submit_button("Clear", on_click=clear, args=([st.session_state.cache_checked, st.session_state.data_checked]), help="coming soon")
 
-            with st.form("Clear"):
-                st.session_state.cache_checked = st.checkbox("Clear Cache", help="coming soon", value=False)
-                st.session_state.data_checked = st.checkbox("Clear Data", help="coming soon", value=False)
-                st.form_submit_button("Clear", on_click=clear, args=([st.session_state.cache_checked, st.session_state.data_checked]), help="coming soon")
-        with st.expander("Input", expanded=True):
-            source_tab0, source_tab1 = st.tabs(["• Example Selector","• Image Uploader"])
+        with st.expander("Image Source", expanded=True):
+            #source_tab0, source_tab1 = st.tabs([f'• Example Selector', f"• Image Uploader"])
+            source_tab0, source_tab1 = st.tabs([f"• Image Uploader", f'• Example Selector'])
+
             with source_tab0:
-                report_runs('app.py|input_selection|138') 
-                st.session_state.input_selection = st.radio("Select Example:", EXAMPLES, horizontal=True, on_change=set_source, kwargs=dict(source='local'), help="coming soon", key='local_example')
-                #print(f'[{timestamp()}|app.py|input_selection|113]')
-                report_runs('app.py|input_selection|141')
-                st.session_state.input_example_path = EXAMPLE_PATHS[st.session_state.input_selection]
-                #print(f'[{timestamp()}|app.py|input_example_path|116]')
-            with source_tab1:
                 report_runs('app.py|input_example_path|143')
                 fImage = st.file_uploader("Upload Your Own Image:", on_change=set_source, kwargs=dict(source='upload'), help="coming soon", key=st.session_state.upload_key) #("Process new image:")
-                #print(f'[{timestamp()}|app.py|st.file_uploader|119]')
                 report_runs('app.py|st.file_uploader|147')
+
+            with source_tab1:
+                report_runs('app.py|input_selection|138') 
+                st.session_state.input_selection = st.radio("Select Example:", EXAMPLES, horizontal=True, on_change=set_source, kwargs=dict(source='local'), help="coming soon", key='local_example')
+                report_runs('app.py|input_selection|141')
+                st.session_state.input_example_path = EXAMPLE_PATHS[st.session_state.input_selection]
 
         if fImage is not None:            
             input_file_name = str(fImage.__dict__['name'])
@@ -159,47 +157,43 @@ def run_app(default_power=0.5,
             st.session_state.input_file_path = st.session_state.input_example_path
 
         st.session_state.input_file_name = os.path.basename(st.session_state.input_file_path)
-        container.write(f'Image Name:   {st.session_state.input_file_name}')
-    
-    
-    
+        image_name_html = f""" 
+        <style>
+        p.a {{
+            font: bold 14px Arial;
+        }}
+        </style>
+        <p class="a">{st.session_state.input_file_name}</p>
+        """
+
+        #container.write(f'Image Name:   {st.session_state.input_file_name}')
+        container.markdown(image_name_html, unsafe_allow_html=True)
+
     if st.session_state.debug:
         with st.expander("session_state 0.2:"):
             st.write(st.session_state)
-
+    
+    with st.expander(f'Select Viewer', expanded=True):
+        viewer_selection = st.radio(" ", st.session_state.viewer_options, help="Coming soon", key="viewer_selection", horizontal=True, index=st.session_state.viewer_selection_index)
+        st.session_state.viewer_selection_index = st.session_state.viewer_options.index(viewer_selection)
     with st.sidebar:
         
-        with st.expander("Settings"):
-            with st.form('Settings'):                
+        with st.expander("Parameters", expanded=True):
+            with st.form('Parameters'):                
                 submitted = st.form_submit_button('Apply Changes', help="coming soon")
 
-                param_tab0, param_tab1, param_tab2, param_tab3 = st.tabs(["• Viewer", "• Basic", "• Exposure", "• Weights"])
-                
-                with param_tab0:
-                    viewer_selection = st.radio("Viewer", ("comparison", "enhanced", "side-by-side", "all"), help="Coming soon", key="viewer_selection")
+                param_tab1, param_tab2, param_tab3 = st.tabs(["• Illumination", "• Exposures", "• Power"])
 
-                    # show_enhanced_only_checkbox = st.checkbox('Show Enhanced Image Only', value=True, help="coming soon")
-                    # show_all_checkbox = st.checkbox('Show All Process Images', value=True, help="coming soon")
-        
                 with param_tab1:
-                    granularity_selection = st.radio("Illumination detail", ('standard', 'boost', 'max'), horizontal=True, help="coming soon")
-                    granularity_dict = {'standard': 0.1, 'boost': 0.3, 'max': 0.5}
-                    granularity = granularity_dict[granularity_selection]
-                    power = float(st.text_input(f'Power     (default = {default_power})', str(default_power), help="coming soon"))
-
-                with param_tab2:
-
-                    a = float(st.text_input(f'Camera A   (default = {default_a})', str(default_a), help="coming soon"))
-                    b = float(st.text_input(f'Camera B   (default = {default_b})', str(default_b), help="coming soon"))
-                    lo = int(st.text_input(f'Min Gain   (default = {default_lo})', str(default_lo), help="Sets lower bound of search range for optimal Exposure Ratio.  Only relevant if Exposure Ratio is in 'auto' mode"))
-                    hi = int(st.text_input(f'Max Gain   (default = {default_hi})', str(default_hi), help="Sets upper bound of search range for optimal Exposure Ratio.  Only relevant if Exposure Ratio is in 'auto' mode"))
-                    exposure_ratio_in = float(st.text_input(f'Exposure Ratio   (default = -1 (auto))', str(default_exposure_ratio), help="coming soon"))
-                    color_gamma = float(st.text_input(f'Color Gamma   (default = {default_color_gamma})', str(default_color_gamma), help="coming soon"))
-                with param_tab3:
-                    kernel_parallel = int(st.text_input(f'Kernel Parallel   (default = {default_kernel_parallel})', str(default_kernel_parallel), help="coming soon"))
-                    kernel_orthogonal = int(st.text_input(f'Kernel Orthogonal   (default = {default_kernel_orthogonal})', str(default_kernel_orthogonal), help="coming soon")) 
-                    smoothness = float(st.text_input(f'Smoothness   (default = {default_smoothness})', str(default_smoothness), help="coming soon"))
-                    sharpness = float(st.text_input(f'Sharpness   (default = {default_sharpness})', str(default_sharpness), help="coming soon"))
+                    
+                    granularity_selection = st.radio("Resolution", st.session_state.granularity_options, index=st.session_state.granularity_options_index, horizontal=True, help="coming soon")
+                    
+                    granularity = st.session_state.granularity_dict[granularity_selection]
+                    st.session_state.granularity_options_index = st.session_state.granularity_options.index(granularity_selection)
+                    kernel_parallel = int(st.text_input(f'Kernel Parallel   (default = {default_kernel_parallel})', str(st.session_state.keys_.kernel_parallel), help="coming soon"))
+                    kernel_orthogonal = int(st.text_input(f'Kernel Orthogonal   (default = {default_kernel_orthogonal})', str(st.session_state.keys_.kernel_orthogonal), help="coming soon")) 
+                    smoothness = float(st.text_input(f'Smoothness   (default = {default_smoothness})', str(st.session_state.keys_.lamda), help="coming soon"))
+                    sharpness = float(st.text_input(f'Sharpness   (default = {default_sharpness})', str(st.session_state.keys_.sharpness), help="coming soon"))
                     # texture_weight_calculator = st.radio("Select texture weight calculator", ('I', 'II', 'III', 'IV', 'V'), horizontal=True, help="coming soon") 
                     # texture_weight_calculator_dict = {
                     #             'I':  ('I', CG_TOL, LU_TOL, MAX_ITER, FILL),
@@ -216,18 +210,36 @@ def run_app(default_power=0.5,
                                 }
                     texture_style, cg_tol, lu_tol, max_iter, fill = texture_weight_calculator_dict[texture_weight_calculator]
 
+                with param_tab2:
+
+                    a = float(st.text_input(f'Camera A   (default = {default_a})', str(default_a), help="coming soon"))
+                    b = float(st.text_input(f'Camera B   (default = {default_b})', str(default_b), help="coming soon"))
+                    lo = int(st.text_input(f'Min Gain   (default = {default_lo})', str(default_lo), help="Sets lower bound of search range for optimal Exposure Ratio.  Only relevant if Exposure Ratio is in 'auto' mode"))
+                    hi = int(st.text_input(f'Max Gain   (default = {default_hi})', str(default_hi), help="Sets upper bound of search range for optimal Exposure Ratio.  Only relevant if Exposure Ratio is in 'auto' mode"))
+                    exposure_ratio_in = float(st.text_input(f'Exposure Ratio   (default = -1 (auto))', str(default_exposure_ratio), help="coming soon"))
+                    
+                with param_tab3:
+                   
+                    power = float(st.text_input(f'Power     (default = {default_power})', str(default_power), help="coming soon"))
+                    color_gamma = float(st.text_input(f'Γ   (default = {default_color_gamma})', str(default_color_gamma), help="Increasing Γ suppresses false colorization.  However, true colors may become washed out as Γ → 1.  The default value 0.3981 was found to work well on many test images."))
 
     start = datetime.datetime.now()
-    #print(f'[{timestamp()}|app.py|156]')
-    report_runs('app.py|run_app|198')
-    image_input_key = load_image(st.session_state.input_file_path, st.session_state.input_source)#, reload_previous=st.session_state.last_run_exited_early)  ###############################<<<<<<<<<<<<<<<<<<<
-    report_runs('app.py|run_app|201')
-    
 
+    report_runs('app.py|run_app|198')
+    
+    # LOAD IMAGE
+    #▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲
+    
+    image_input_key = load_image(st.session_state.input_file_path, st.session_state.input_source)#, reload_previous=st.session_state.last_run_exited_early)  ###############################<<<<<<<<<<<<<<<<<<<
+    
+    #▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲
+
+    report_runs('app.py|run_app|201')
     if st.session_state.debug:
         with st.expander("session_state 0.3:"):
             st.write(st.session_state)
 
+    # Create all key names unique to the current image and parameter set
     st.session_state.keys_ = Keys(image_input_key, 
                                  granularity, 
                                  kernel_parallel, 
@@ -236,15 +248,14 @@ def run_app(default_power=0.5,
                                  texture_style, 
                                  smoothness, 
                                  power, 
-                                 a,
-                                 b,
                                  exposure_ratio_in, 
                                  color_gamma,
+                                 a,
+                                 b,
                                  lo,
                                  hi)
 
     report_runs('app.py|run_app|222')
-
     if st.session_state.debug:
         with st.expander("session_state 0.4:"):
             st.write(st.session_state.keys_)
@@ -255,7 +266,7 @@ def run_app(default_power=0.5,
     st.session_state.keys_to_shape[image_input_key] = shape
     st.session_state.input_shape = st.session_state.keys_to_shape[image_input_key]
     #container.write(f'Image Size:   {str(st.session_state.input_shape[0])}   ×   {str(st.session_state.input_shape[1])}')
-    container.write(f'Image Size:   {str(shape[0])}   ×   {str(shape[1])}')
+    container.write(f'{str(shape[0])}   ×   {str(shape[1])}')
     report_runs('app.py|run_app|231')
    
     if st.session_state.keys_.enhanced_image_key not in st.session_state.memmapped:
@@ -282,27 +293,18 @@ def run_app(default_power=0.5,
                                                        FILL=fill,
                                                        return_texture_weights=True)
 
-    report_runs('app.py|run_app|257')
 
     end = datetime.datetime.now()
     process_time = (end - start).total_seconds()
     print(f'[{datetime.datetime.now().isoformat()}]  Processing time: {process_time:.5f} s')
     sys.stdout.flush()
-
     
+    report_runs('app.py|run_app|257')
     if st.session_state.debug:
         with st.expander("session_state 0.5:"):
             st.write(st.session_state)
 
-# Welcome to Light-Fix, an image enhancement application
-# Welcome to Light-Fix, an image enhancement application that shines new light on backlit photos
-    # with st.expander(" ", expanded=True):
-    #     st.markdown("<h1 style='text-align: left; color: white;'>Welcome to Light-Fix</h1>", unsafe_allow_html=True)
-    #     st.markdown("<h3 style='text-align: left; color: yellow'>Check out the examples to see what's possible</h3>", unsafe_allow_html=True)
-
-    #     st.markdown("<h3 style='text-align: left; color: yellow'>Upload your own image to enhance</h3>", unsafe_allow_html=True)
-
-    shape = st.session_state.memmapped[image_input_key][2].shape
+    #shape = st.session_state.memmapped[image_input_key][2].shape
     
     granularity_param_str = f'_{granularity*100:.0f}'
     convolution_param_str = granularity_param_str + f'_{kernel_parallel:d}_{kernel_orthogonal:d}'
@@ -314,15 +316,22 @@ def run_app(default_power=0.5,
     input_file_ext = '.' + str(input_file_name.split('.')[-1])
     input_file_basename = input_file_name.replace(input_file_ext, '')
 
-    if viewer_selection == "comparison":
-
-        with st.expander(" "):
+    if viewer_selection == "Comparisons (interactive)":
+        comparison_options = ("Original Image", "Enhanced Image", "Illumination Map", "Total Variation", "Fusion Weights", "Max Entropy Exposure", "Texture Weights", "Fine Texture Map", "Enhancement Map")
+        
+    
+        with st.expander("Options "):
             with st.form("Comparison"):
-                left_image_selection = st.radio("Select Left", ("Original Image", "Enhanced Image", "Illumination Map", "Total Variation", "Fusion Weights", "Max Entropy Exposure", "Texture Weights", "Fine Texture Map", "Enhancement Map"), help="Coming Soon", key="compare_left")
-                right_image_selection = st.radio("Select Right", ("Enhanced Image", "Original Image", "Illumination Map", "Total Variation", "Fusion Weights", "Max Entropy Exposure", "Texture Weights", "Fine Texture Map", "Enhancement Map"), help="Coming Soon", key="compare_right")
                 submitted = st.form_submit_button("Update Comparison")
-
-        paths = {
+                col_left, col_right, _ = st.columns(3)
+                with col_left:
+                    st.session_state.left_image_selection = st.radio("Select Left", comparison_options, help="Coming Soon", key="compare_left", index=st.session_state.left_image_selection_index)
+                    st.session_state.left_image_selection_index = comparison_options.index(st.session_state.left_image_selection)
+                with col_right:
+                    st.session_state.right_image_selection = st.radio("Select Right", comparison_options, help="Coming Soon", key="compare_right", index=st.session_state.right_image_selection_index)
+                    st.session_state.right_image_selection_index = comparison_options.index(st.session_state.right_image_selection)
+                
+        st.session_state.paths = {
                     "Original Image" : st.session_state.input_file_path, 
                     "Enhanced Image" : st.session_state.keys_to_images[st.session_state.keys_.enhanced_image_key], 
                     "Illumination Map" : st.session_state.keys_to_images[st.session_state.keys_.smoother_output_fullsize_key], 
@@ -334,21 +343,20 @@ def run_app(default_power=0.5,
                     "Enhancement Map" : st.session_state.keys_to_images[st.session_state.keys_.enhancement_map_key]
                 }
                 
-
-        left_image = cv2.cvtColor(cv2.imread(paths[left_image_selection]), cv2.COLOR_BGR2RGB)
-        right_image = cv2.cvtColor(cv2.imread(paths[right_image_selection]), cv2.COLOR_BGR2RGB)
-    
+        left_image = cv2.cvtColor(cv2.imread(st.session_state.paths[st.session_state.left_image_selection]), cv2.COLOR_BGR2RGB)
+        right_image = cv2.cvtColor(cv2.imread(st.session_state.paths[st.session_state.right_image_selection]), cv2.COLOR_BGR2RGB)
         image_comparison(
             img1=left_image,
             img2=right_image,
-            label1=left_image_selection,
-            label2=right_image_selection,
-            width=1250,
+            label1=st.session_state.left_image_selection,
+            label2=st.session_state.right_image_selection,
+            width=1080,
+            starting_position=50,
             show_labels=True
             )
+       
 
-
-    elif viewer_selection == 'enhanced':
+    elif viewer_selection == "Enhanced Image":
 
         st.markdown("<h3 style='text-align: center; color: white;'>Enhanced Image</h3>", unsafe_allow_html=True)
         st.image(cv2.imread(st.session_state.keys_to_images[st.session_state.keys_.enhanced_image_key]), channels="BGR")
@@ -362,7 +370,7 @@ def run_app(default_power=0.5,
                                         key='ei'
                                    )   
 
-    elif viewer_selection == 'side-by-side':
+    elif viewer_selection == "Original vs Enhanced":
         col1, col2 = st.columns(2)
 
         with col1:        
@@ -385,7 +393,7 @@ def run_app(default_power=0.5,
                                             key='ei'
                                        )   
 
-    else:
+    else: # elif viewer_selection == "All Processing Steps":
 
         col10, col20, col30 = st.columns(3)
 
@@ -526,7 +534,8 @@ def run_app(default_power=0.5,
             st.text("\n\n\n\n\n")
            
             st.text(image_np_fused_info_str)
- 
+    
+    if  st.session_state.show_resource_usage:
         with st.expander("Resource Usage"):
                                               
             pid = getpid()
