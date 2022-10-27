@@ -7,9 +7,9 @@ port = 5001
 enableCORS = false
 enableXsrfProtection=false
 [theme]
-primaryColor="#F63366"
+primaryColor="#dca5ce"
 backgroundColor="#0e1117"
-secondaryBackgroundColor="#31333F"
+secondaryBackgroundColor="#31333f"
 textColor="#fafafa"
 font="sans serif"
 
