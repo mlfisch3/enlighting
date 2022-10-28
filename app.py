@@ -21,6 +21,18 @@ import weakref
 from pathlib import Path
 from streamlit_image_comparison import image_comparison
 
+def prepare_next_key():
+
+    st.session_state.viewer_selection_next_key = str(randint(1000, 10000000))
+
+    print('\n')
+
+    print(f'viewer_selection : {st.session_state.viewer_selection}')
+    print(f'viewer_selection_index : {st.session_state.viewer_selection_index}')
+
+    print('\n')
+
+
 def set_source(source='local'):
     print('\n')
     print('↓↓↓↓↓↓↓↓↓↓↓↓')
@@ -35,6 +47,9 @@ def set_source(source='local'):
         st.session_state.upload_key = str(randint(1000, 10000000))
     else:
         st.session_state.input_source = 'U'
+
+    st.session_state.viewer_selection_key = str(randint(1000, 10000000))
+    st.session_state.viewer_selection_index = st.session_state.viewer_options.index(st.session_state.viewer_selection)
 
     print('\n')
 #    print(globals().keys())
@@ -86,11 +101,35 @@ def run_app(default_power=0.5,
     container = st.sidebar.container()
     with container:
     #with st.sidebar.container():
-        with st.expander("About", expanded=True):
-            st.markdown("<h1 style='text-align: left; color: white;'>Welcome to Light-Fix</h1>", unsafe_allow_html=True)
-            st.markdown("<h3 style='text-align: left; color: yellow'>Check out the examples to see what's possible</h3>", unsafe_allow_html=True)
+        with st.expander("About ", expanded=True):
+            about_tab, details_tab = st.tabs(["• Intro", "• Details"])
+            with about_tab:
+            
+                st.markdown("<h1 style='text-align: left; color: white;'>Welcome to Light-Fix</h1>", unsafe_allow_html=True)
+                st.markdown("<h3 style='text-align: left; color: yellow'>Check out the examples to see what's possible</h3>", unsafe_allow_html=True)
 
-            st.markdown("<h3 style='text-align: left; color: yellow'>Upload your own images to enhance</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='text-align: left; color: yellow'>Upload your own images to enhance</h3>", unsafe_allow_html=True)
+            with details_tab:
+                #st.markdown("<h4 style='text-align: left; color: white;'>Light-Fix will restore lighting detail in underexposed image areas.  </h4>", unsafe_allow_html=True)
+
+                detailed_info = f'Light-Fix restores lighting detail in underexposed image areas.\n\r\n\rThe app is fully functional, but help descriptions are still being added.\n\rThis detailed information section will be expanded.\n\rA detailed explanation of the underlying algorithm is also in preparation'
+                details = f""" 
+                <style>
+                p.a {{
+                    font: bold 14px Arial;
+                }}
+                </style>
+                <p class="a">{detailed_info}</p>
+                """
+
+                #container.write(f'Image Name:   {st.session_state.input_file_name}')
+                st.markdown(detailed_info, unsafe_allow_html=True)
+
+           #     st.markdown("<h4 style='text-align: left; color: white;'>The app is fully functional. Various descriptions are still being added.  This detailed information section will be expanded.  </h4>", unsafe_allow_html=True)
+           #     st.markdown("<h4 style='text-align: left; color: white;'>A detailed explanation of the underlying algorithm is also in preparation.  </h4>", unsafe_allow_html=True)
+
+
+
         pid = getpid()
         placeholder = st.empty()
         if st.session_state.show_console:
@@ -173,9 +212,6 @@ def run_app(default_power=0.5,
         with st.expander("session_state 0.2:"):
             st.write(st.session_state)
     
-    with st.expander(f'Select Viewer', expanded=True):
-        viewer_selection = st.radio(" ", st.session_state.viewer_options, help="Coming soon", key="viewer_selection", horizontal=True, index=st.session_state.viewer_selection_index)
-        st.session_state.viewer_selection_index = st.session_state.viewer_options.index(viewer_selection)
     with st.sidebar:
         
         with st.expander("Parameters", expanded=True):
@@ -316,9 +352,13 @@ def run_app(default_power=0.5,
     input_file_ext = '.' + str(input_file_name.split('.')[-1])
     input_file_basename = input_file_name.replace(input_file_ext, '')
 
-    if viewer_selection == "Comparisons (interactive)":
+    with st.expander(f'Select Viewer', expanded=True):
+
+        st.session_state.viewer_selection = st.radio(" ", st.session_state.viewer_options, help="Coming soon", key=st.session_state.viewer_selection_key, horizontal=True, index=st.session_state.viewer_selection_index)#, on_change=prepare_next_key)
+
+    if  st.session_state.viewer_selection == "Comparisons (interactive)":
         comparison_options = ("Original Image", "Enhanced Image", "Illumination Map", "Total Variation", "Fusion Weights", "Max Entropy Exposure", "Texture Weights", "Fine Texture Map", "Enhancement Map")
-        
+    
     
         with st.expander("Options "):
             with st.form("Comparison"):
@@ -356,7 +396,7 @@ def run_app(default_power=0.5,
             )
        
 
-    elif viewer_selection == "Enhanced Image":
+    elif st.session_state.viewer_selection == "Enhanced Image":
 
         st.markdown("<h3 style='text-align: center; color: white;'>Enhanced Image</h3>", unsafe_allow_html=True)
         st.image(cv2.imread(st.session_state.keys_to_images[st.session_state.keys_.enhanced_image_key]), channels="BGR")
@@ -370,7 +410,7 @@ def run_app(default_power=0.5,
                                         key='ei'
                                    )   
 
-    elif viewer_selection == "Original vs Enhanced":
+    elif  st.session_state.viewer_selection == "Original vs Enhanced":
         col1, col2 = st.columns(2)
 
         with col1:        

@@ -49,7 +49,9 @@ def update_state_history(tag=''):
                 "source_last_updated" : [st.session_state.source_last_updated],
                 "fImage_is_not_None" : [st.session_state.fImage_is_not_None],
                 "input_file_path" : [st.session_state.input_file_path],
-                "upload_key" : [st.session_state.upload_key]
+                "upload_key" : [st.session_state.upload_key],
+                "viewer_selection" : [st.session_state.viewer_selection],
+                "viewer_selection_key" : [st.session_state.viewer_selection_key]
             }
 
     update_df = pd.DataFrame(data=update)
@@ -121,9 +123,15 @@ def initialize_session():
 
     if 'viewer_options' not in st.session_state:
         st.session_state.viewer_options = ("Enhanced Image", "Original vs Enhanced", "Comparisons (interactive)", "Show All Processing Steps")
+    
+    if 'viewer_selection_key' not in st.session_state:
+        st.session_state.viewer_selection_key = "Default"
 
     if 'viewer_selection_index' not in st.session_state:
         st.session_state.viewer_selection_index = 1     
+
+    if 'viewer_selection' not in st.session_state:
+        st.session_state.viewer_selection = st.session_state.viewer_options[st.session_state.viewer_selection_index]
 
     if 'base_dir' not in st.session_state:
         st.session_state.base_dir_path = BASE_DIR_PATH
