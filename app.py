@@ -13,7 +13,7 @@ import gc
 from utils.io_tools import change_extension, load_binary, load_image, mkpath
 from utils.config import NPY_DIR_PATH, IMAGE_DIR_PATH, EXAMPLE_PATHS, EXAMPLES, DATA_DIR_PATH, EXAMPLES_DIR_PATH, DEBUG_FILE_PATH
 from utils.sodef import bimef
-from utils.array_tools import float32_to_uint8, uint8_to_float32, normalize_array, array_info#, mono_float32_to_rgb_uint8
+from utils.array_tools import float32_to_uint8, uint8_to_float32, normalize_array, array_info
 from utils.logging import timestamp, log_memory
 from utils.mm import get_mmaps, get_weakrefs, references_dead_object, clear_cache, clear_data, clear
 from utils.session import Keys, report_runs
@@ -21,24 +21,9 @@ import weakref
 from pathlib import Path
 from streamlit_image_comparison import image_comparison
 
-def prepare_next_key():
-
-    st.session_state.viewer_selection_next_key = str(randint(1000, 10000000))
-
-    print('\n')
-
-    print(f'viewer_selection : {st.session_state.viewer_selection}')
-    print(f'viewer_selection_index : {st.session_state.viewer_selection_index}')
-
-    print('\n')
-
-
 def set_source(source='local'):
     print('\n')
     print('↓↓↓↓↓↓↓↓↓↓↓↓')
-
-    # if all([source == 'local', st.session_state.source_last_updated == 'upload']):
-    #     st.session_state.upload_key = str(randint(1000, 10000000))
 
     st.session_state.source_last_updated = source
 
@@ -52,14 +37,12 @@ def set_source(source='local'):
     st.session_state.viewer_selection_index = st.session_state.viewer_options.index(st.session_state.viewer_selection)
 
     print('\n')
-#    print(globals().keys())
     print('\n')
-#    print(f'[{timestamp()}|app.py|set_source_31]')
-    report_runs('app.py|set_source|59')   
+    report_runs('app.py|set_source|41')   
     print('↑↑↑↑↑↑↑↑↑↑↑↑')
     print('\n')
 
-def run_command():#command, ):
+def run_command():
     print(f'[{timestamp()}] st.session_state.console_in: {st.session_state.console_in}')
     try:
         st.session_state.console_out = str(subprocess.check_output(st.session_state.console_in, shell=True, text=True))
@@ -92,15 +75,14 @@ def run_app(default_power=0.5,
     print('══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗')
 
     if st.session_state.debug:
-        with st.expander("session_state 0:"):
+        with st.expander("session_state 0.1:"):
             st.write(st.session_state)
 
     st.session_state.total_app_runs += 1
 
-    report_runs('app.py|run_app|105')
+    report_runs('app.py|run_app|83')
     container = st.sidebar.container()
     with container:
-    #with st.sidebar.container():
         with st.expander("About ", expanded=True):
             about_tab, details_tab = st.tabs(["• Intro", "• Details"])
             with about_tab:
@@ -110,9 +92,7 @@ def run_app(default_power=0.5,
 
                 st.markdown("<h3 style='text-align: left; color: yellow'>Upload your own images to enhance</h3>", unsafe_allow_html=True)
             with details_tab:
-                #st.markdown("<h4 style='text-align: left; color: white;'>Light-Fix will restore lighting detail in underexposed image areas.  </h4>", unsafe_allow_html=True)
-
-                detailed_info = f'Light-Fix restores lighting detail in underexposed image areas.\n\r\n\rThe app is fully functional, but help descriptions are still being added.\n\rThis detailed information section will be expanded.\n\rA detailed explanation of the underlying algorithm is also in preparation'
+                detailed_info = f'Light-Fix restores lighting detail to underexposed image regions.\n\r\n\rThe app is fully functional, but help descriptions are still being added.\n\rThis detailed information section will be expanded.\n\rA detailed explanation of the underlying algorithm is also in preparation'
                 details = f""" 
                 <style>
                 p.a {{
@@ -121,14 +101,7 @@ def run_app(default_power=0.5,
                 </style>
                 <p class="a">{detailed_info}</p>
                 """
-
-                #container.write(f'Image Name:   {st.session_state.input_file_name}')
                 st.markdown(detailed_info, unsafe_allow_html=True)
-
-           #     st.markdown("<h4 style='text-align: left; color: white;'>The app is fully functional. Various descriptions are still being added.  This detailed information section will be expanded.  </h4>", unsafe_allow_html=True)
-           #     st.markdown("<h4 style='text-align: left; color: white;'>A detailed explanation of the underlying algorithm is also in preparation.  </h4>", unsafe_allow_html=True)
-
-
 
         pid = getpid()
         placeholder = st.empty()
@@ -137,15 +110,10 @@ def run_app(default_power=0.5,
                 with st.expander("console"):
                     with st.form('console'):
                         command = st.text_input(f'[{pid}] {timestamp()}', str(st.session_state.console_in), key="console_in")
-                        submitted = st.form_submit_button('run', help="coming soon", on_click=run_command)#, args=(command,))
+                        submitted = st.form_submit_button('run', help="coming soon", on_click=run_command)
 
                         st.write(f'IN: {command}')
-                        #st.write(f'IN: {st.session_state.console_in}')
-                        
                         st.text(f'OUT:\n{st.session_state.console_out}')
-                        #with st.expander('OUT'):
-                            #st.text(f'{st.session_state.console_out}')
-                            # st.text(f'OUT: {console_out}')
         else:
              placeholder.empty()
             
@@ -161,18 +129,17 @@ def run_app(default_power=0.5,
                     st.form_submit_button("Clear", on_click=clear, args=([st.session_state.cache_checked, st.session_state.data_checked]), help="coming soon")
 
         with st.expander("Image Source", expanded=True):
-            #source_tab0, source_tab1 = st.tabs([f'• Example Selector', f"• Image Uploader"])
             source_tab0, source_tab1 = st.tabs([f"• Image Uploader", f'• Example Selector'])
 
             with source_tab0:
-                report_runs('app.py|input_example_path|143')
-                fImage = st.file_uploader("Upload Your Own Image:", on_change=set_source, kwargs=dict(source='upload'), help="coming soon", key=st.session_state.upload_key) #("Process new image:")
-                report_runs('app.py|st.file_uploader|147')
+                report_runs('app.py|input_example_path|135')
+                fImage = st.file_uploader("Upload Your Own Image:", on_change=set_source, kwargs=dict(source='upload'), help="coming soon", key=st.session_state.upload_key)
+                report_runs('app.py|st.file_uploader|137')
 
             with source_tab1:
-                report_runs('app.py|input_selection|138') 
+                report_runs('app.py|input_selection|140') 
                 st.session_state.input_selection = st.radio("Select Example:", EXAMPLES, horizontal=True, on_change=set_source, kwargs=dict(source='local'), help="coming soon", key='local_example')
-                report_runs('app.py|input_selection|141')
+                report_runs('app.py|input_selection|142')
                 st.session_state.input_example_path = EXAMPLE_PATHS[st.session_state.input_selection]
 
         if fImage is not None:            
@@ -204,8 +171,6 @@ def run_app(default_power=0.5,
         </style>
         <p class="a">{st.session_state.input_file_name}</p>
         """
-
-        #container.write(f'Image Name:   {st.session_state.input_file_name}')
         container.markdown(image_name_html, unsafe_allow_html=True)
 
     if st.session_state.debug:
@@ -261,12 +226,12 @@ def run_app(default_power=0.5,
 
     start = datetime.datetime.now()
 
-    report_runs('app.py|run_app|198')
+    report_runs('app.py|run_app|229')
     
     # LOAD IMAGE
     #▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲
     
-    image_input_key = load_image(st.session_state.input_file_path, st.session_state.input_source)#, reload_previous=st.session_state.last_run_exited_early)  ###############################<<<<<<<<<<<<<<<<<<<
+    image_input_key = load_image(st.session_state.input_file_path, st.session_state.input_source)
     
     #▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲
 
@@ -291,7 +256,7 @@ def run_app(default_power=0.5,
                                  lo,
                                  hi)
 
-    report_runs('app.py|run_app|222')
+    report_runs('app.py|run_app|259')
     if st.session_state.debug:
         with st.expander("session_state 0.4:"):
             st.write(st.session_state.keys_)
@@ -301,13 +266,12 @@ def run_app(default_power=0.5,
     shape = image_01_maxRGB.shape
     st.session_state.keys_to_shape[image_input_key] = shape
     st.session_state.input_shape = st.session_state.keys_to_shape[image_input_key]
-    #container.write(f'Image Size:   {str(st.session_state.input_shape[0])}   ×   {str(st.session_state.input_shape[1])}')
     container.write(f'{str(shape[0])}   ×   {str(shape[1])}')
-    report_runs('app.py|run_app|231')
+    report_runs('app.py|run_app|270')
    
     if st.session_state.keys_.enhanced_image_key not in st.session_state.memmapped:
 
-        report_runs('app.py|run_app|235')
+        report_runs('app.py|run_app|274')
 
         enhanced_image, exposure_ratio_out = bimef(image_01, 
                                                        image_01_maxRGB,
@@ -335,13 +299,12 @@ def run_app(default_power=0.5,
     print(f'[{datetime.datetime.now().isoformat()}]  Processing time: {process_time:.5f} s')
     sys.stdout.flush()
     
-    report_runs('app.py|run_app|257')
+    report_runs('app.py|run_app|302')
     if st.session_state.debug:
         with st.expander("session_state 0.5:"):
             st.write(st.session_state)
 
-    #shape = st.session_state.memmapped[image_input_key][2].shape
-    
+    # prepare to encode parameter settings in filenames of optional downloads
     granularity_param_str = f'_{granularity*100:.0f}'
     convolution_param_str = granularity_param_str + f'_{kernel_parallel:d}_{kernel_orthogonal:d}'
     texture_param_str = convolution_param_str + f'_{sharpness*1000:.0f}_{texture_weight_calculator:s}'
@@ -358,7 +321,6 @@ def run_app(default_power=0.5,
 
     if  st.session_state.viewer_selection == "Comparisons (interactive)":
         comparison_options = ("Original Image", "Enhanced Image", "Illumination Map", "Total Variation", "Fusion Weights", "Max Entropy Exposure", "Texture Weights", "Fine Texture Map", "Enhancement Map")
-    
     
         with st.expander("Options "):
             with st.form("Comparison"):
@@ -433,10 +395,9 @@ def run_app(default_power=0.5,
                                             key='ei'
                                        )   
 
-    else: # elif viewer_selection == "All Processing Steps":
+    else:
 
         col10, col20, col30 = st.columns(3)
-
 
         with col10:
             
@@ -593,59 +554,14 @@ def run_app(default_power=0.5,
 
             st.text(f'[{timestamp()}]\nPID: {pid}')
             st.text(f'rss: {mem:.2f} MB\nvirt: {virt:.2f} MB\nswap: {swap:.2f} MB')
-
-    # with st.form("Download Batch"):
-    #     st.text('Download All Output Files to Local Folder:')     
-
-    #     colI, colII = st.columns(2)
-    #     with colI:
-    #         default_dir_path = DEFAULT_DIR_PATH
-    #         dir_path = st.text_input('Folder Name:', default_dir_path)
-
-    #         last_download_time = '-'
-
-    #     colA, colB, colC, colD, colE = st.columns(5)
-    #     with colA:
-    #         ext_batch = st.text_input('File extension:', 'jpg')
-
-    #         illumination_map_fullpath = os.path.join(dir_path,output_illumination_map_file_name)
-    #         wls_map_fullpath = os.path.join(dir_path, output_wls_map_file_name)
-    #         L1_map_fullpath = os.path.join(dir_path, output_L1_map_file_name)
-    #         fine_texture_map_fullpath = os.path.join(dir_path, output_fine_texture_map_file_name)
-    #         simulation_fullpath = os.path.join(dir_path,output_simulation_file_name)
-    #         exposure_maxent_fullpath = os.path.join(dir_path,output_exposure_maxent_file_name)
-    #         fusion_weights_fullpath = os.path.join(dir_path,output_fusion_weights_file_name)
-    #         fused_fullpath = os.path.join(dir_path,output_fused_file_name)
-
-    #     with colB:
-    #         st.text('\n')
-    #         st.text('\n')
-    #         if st.form_submit_button('DOWNLOAD ALL', on_click=mkpath, args=[dir_path]):
-    #             mkpath(dir_path)
-    #             img.imsave(change_extension(wls_map_fullpath, ext_batch), texture_weights_map)
-    #             img.imsave(change_extension(L1_map_fullpath, ext_batch), image_np_TV_map)
-    #             img.imsave(change_extension(illumination_map_fullpath, ext_batch), illumination_map)
-    #             img.imsave(change_extension(fine_texture_map_fullpath, ext_batch), image_np_fine_texture_map)
-    #             img.imsave(change_extension(simulation_fullpath, ext_batch), image_np_simulation)
-    #             img.imsave(change_extension(fusion_weights_fullpath, ext_batch), fusion_weights)
-    #             img.imsave(change_extension(exposure_maxent_fullpath, ext_batch), image_exposure_maxent)
-    #             img.imsave(change_extension(fused_fullpath, ext_batch), image_np_fused)
-    #             last_download_time = datetime.datetime.now()
-
-    #     st.text(f'last batch download completed at {last_download_time}')
     
     st.session_state.completed_app_runs += 1
-    #print(f'[{timestamp()}|app.py|509]')
-    report_runs('app.py|run_app|562')
+    report_runs('app.py|run_app|559')
 
     if st.session_state.debug:
         with st.expander("session_state 1.0:"):
             st.write(st.session_state)
-
     
-    #print('╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦')
-    #print('○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○○')
-#    print('≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡')
     print('══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝')
 
     return True

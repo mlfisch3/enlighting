@@ -60,16 +60,7 @@ def clear_data():
 
 
 def clear_cache():
-    # mmaps = get_mmaps()
-
-    # for k,v in mmaps.items():
-    #     if not globals[k]._mmap.closed:
-    #         globals[k]._mmap.close()
-    #         print(f'closed {k} mmap file {v}')
-
-    # for k,v in mmaps.items():
-    #     del globals[k]
-    #     print(f'del {k}')
+  
     print(f'[{timestamp()}] Closing open memory mapped files ...')
     if len(st.session_state.mmap_file_wref_lookup.keys()) > 0:
       # (try) to close any open memory mapped files and unbind the mapped variable
@@ -84,19 +75,10 @@ def clear_cache():
                   print(f"Successfully closed memory mapped file {vars(v[0]())['filename']} bound to object \'{v[1]}\'")
               else:
                   print(f"Unable to close memory mapped file {vars(v[0]())['filename']} bound to object \'{v[1]}\'")
-
-      # del st.session_state.mmap_file_wref_lookup
-      # st.session_state.mmap_file_wref_lookup = {}
-    
+  
       print(f'[{timestamp()}] Clearing keys from memory map ...')
       del st.session_state.memmapped
       st.session_state.memmapped = {}
-      
-      # del st.session_state.keys_to_npy
-      # st.session_state.keys_to_npy = {}
-
-      # del st.session_state.keys_to_png
-      # st.session_state.keys_to_png = {}
 
       st.session_state.purge_count += 1
       print('completed memory map purge')

@@ -225,7 +225,7 @@ def load_image(input_file_path, input_source):
 
             if not all([os.path.isfile(fpath_u8), os.path.isfile(fpath_f32), os.path.isfile(fpath_f32_maxRGB)]):
                 print(f'[{timestamp()}] Did not find existing npy files for image_input. Creating them now ...')
-                image_u8 = cv2.imread(st.session_state.input_file_path)#[:,:,[2,1,0]]
+                image_u8 = cv2.imread(st.session_state.input_file_path)
                 #st.session_state.keys_to_shape[input_key] = image_u8.shape
 
                 image_f32 = normalize_array(image_u8)
@@ -241,7 +241,7 @@ def load_image(input_file_path, input_source):
                 save_to_npy(fpath_f32_maxRGB, image_f32_maxRGB)
                 del image_f32_maxRGB
 
-        # open saved arrays as memory maps
+        # open saved arrays as memory maps. keep track of them with weakrefs
         image_u8_ = np.lib.format.open_memmap(fpath_u8, mode='r', dtype=np.uint8)
         st.session_state.mmap_file_wref_lookup[fpath_u8] = (weakref.ref(image_u8_), 'image_u8_')
 

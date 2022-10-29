@@ -118,18 +118,18 @@ def calculate_texture_weights(image_01_maxRGB_reduced, restore_shape, kernel_sha
             elif texture_style == 'III':
                 texture_weights_v = 1/(np.abs(convolution_v) + sharpness)
                 texture_weights_h = 1/(np.abs(convolution_h) + sharpness)
+            else:
+                convolution_v_abs, convolution_h_abs = convolve(gradient_v, gradient_h, kernel_shape, return_level=-2)
 
-            # convolution_v_abs, convolution_h_abs = convolve(gradient_v, gradient_h, kernel_shape, return_level=-2)
+                if texture_style == 'IV':
+                    texture_weights_v = convolution_v_abs/(np.abs(convolution_v) + sharpness)
+                    texture_weights_h = convolution_h_abs/(np.abs(convolution_h)+ sharpness)
+                    return gradient_v, gradient_h, texture_weights_v, texture_weights_h
 
-            # if texture_style == 'IV':
-            #     texture_weights_v = convolution_v_abs/(np.abs(convolution_v) + sharpness)
-            #     texture_weights_h = convolution_h_abs/(np.abs(convolution_h)+ sharpness)
-            #     return gradient_v, gradient_h, texture_weights_v, texture_weights_h
-
-            # if texture_style == 'V':
-            #     texture_weights_v = convolution_v_abs/(np.abs(convolution_v) + sharpness)
-            #     texture_weights_h = convolution_h_abs/(np.abs(convolution_h)+ sharpness)
-            #     return gradient_v, gradient_h, texture_weights_v, texture_weights_h
+                elif texture_style == 'V':
+                    texture_weights_v = convolution_v_abs/(np.abs(convolution_v) + sharpness)
+                    texture_weights_h = convolution_h_abs/(np.abs(convolution_h)+ sharpness)
+                    return gradient_v, gradient_h, texture_weights_v, texture_weights_h
 
             # create total_variation_map, upsampled to full-size, save as image to disk, then free the resource 
         
@@ -139,14 +139,14 @@ def calculate_texture_weights(image_01_maxRGB_reduced, restore_shape, kernel_sha
             del total_variation_map
 
             #texture_weights_map = np.dstack([np.zeros_like(texture_weights_v),texture_weights_v, texture_weights_h])
-            #texture_weights_map = (texture_weights_v + texture_weights_h)/2
+            #texture_weights_map = np.sqrt(np.power(texture_weights_v,2) + np.power(texture_weights_h,2))
             texture_weights_map = (np.abs(texture_weights_v) + np.abs(texture_weights_h))/2
             texture_weights_mean = texture_weights_map.ravel().mean()
             texture_weights_std = texture_weights_map.ravel().std()
             print(f'texture_weights_mean: {texture_weights_mean}')
             print(f'texture_weights_std: {texture_weights_std}')
             #texture_weights_map = texture_weights_map.clip(min=texture_weights_mean-texture_weights_std, max=texture_weights_mean+texture_weights_std)
-            texture_weights_map = texture_weights_map.clip(min=0, max=texture_weights_mean+texture_weights_std)
+            texture_weights_map = texture_weights_map.clip(min=0, max=texture_weights_mean+texture_weights_std)  # prevent value range from extending to 1/sharpness ~ 10^4
             st.session_state.saved_images[impath] = cv2.imwrite(impath_M, float32_to_uint8(normalize_array(imresize(texture_weights_map, size=restore_shape))))
             del texture_weights_map
 

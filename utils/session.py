@@ -38,7 +38,7 @@ def set_debug():
         st.session_state.debug = True
 
 
-def update_state_history(tag=''):
+def report_runs(tag=''):
 
     update = {
                 "timestamp" : [timestamp()],
@@ -58,59 +58,7 @@ def update_state_history(tag=''):
     st.session_state.state_history = pd.concat([st.session_state.state_history, update_df]).reset_index(drop=True)
 
 
-def report_runs(tag=''):
-    
-   #  print(f'[{timestamp()}|report_runs] RUNS    main ({st.session_state.completed_main_runs}/{st.session_state.total_main_runs})\
-   # app ({st.session_state.completed_app_runs}/{st.session_state.total_app_runs})')
-   #  print(f'[{timestamp()}|report_runs] st.session_state.fImage_is_not_None: {st.session_state.fImage_is_not_None}') 
-   #  print(f'[{timestamp()}|report_runs] st.session_state.input_file_path: {st.session_state.input_file_path}') 
-   #  print(f'[{timestamp()}|report_runs] st.session_state.input_source: {st.session_state.input_source}') 
-   #  print(f'[{timestamp()}|report_runs] st.session_state.input_key: {st.session_state.input_key}')
-   #  print(f'[{timestamp()}|report_runs] st.session_state.source_last_updated: {st.session_state.source_last_updated}')
-   #  print(f'[{timestamp()}|report_runs] st.session_state.upload_key: {st.session_state.upload_key}')
-
-   #  if 'user_upload' in st.session_state:
-   #      if st.session_state.user_upload is not None:
-   #          print(f'[{timestamp()}|report_runs] st.session_state.user_upload IS NONE')
-   #      else:
-   #          print(f'[{timestamp()}|report_runs] st.session_state.user_upload IS NOT NONE')
-   #  else:
-   #          print(f'[{timestamp()}|report_runs] st.session_state.user_upload IS UNDEFINED')
-
-    # if st.session_state.fImage is not None:
-    #     input_file_name = str(st.session_state.fImage.__dict__['name'])
-    #     print(f'[{timestamp()}|report_runs] input_file_name: {input_file_name}')
-
-    update_state_history(tag)
-
-
 def initialize_session():
-
-    # if 'state_history' not in st.session_state:
-    #     st.session_state.state_history = pd.DataFrame(data={
-    #                                                             "timestamp" : [timestamp()],
-    #                                                             "tag" : ['session.py|initialize_session|77'],
-    #                                                             "input_key" : [''],
-    #                                                             "input_source" : [''],
-    #                                                             "source_last_updated" : [''],
-    #                                                             "fImage_is_not_None" : [''],
-    #                                                             "input_file_path" : [''],
-    #                                                             "upload_key" : [''],
-    #                                                         }
-    #                                                     )
-    # else:
-    #     st.session_state.state_history = pd.DataFrame(data={
-    #                                                             "timestamp" : [timestamp()],
-    #                                                             "tag" : ['session.py|initialize_session|89'],
-    #                                                             "input_key" : st.session_state.input_key,
-    #                                                             "input_source" : st.session_state.input_source,
-    #                                                             "source_last_updated" : st.session_state.source_last_updated,
-    #                                                             "fImage_is_not_None" : st.session_state.fImage_is_not_None,
-    #                                                             "input_file_path" : st.session_state.input_file_path,
-    #                                                             "upload_key" : st.session_state.upload_key,
-    #                                                         }
-    #                                                     )
-
 
     if 'granularity_options' not in st.session_state:
         st.session_state.granularity_options = ('standard', 'boost', 'max')
@@ -275,9 +223,6 @@ def initialize_session():
     if 'named_keys' not in st.session_state:
         st.session_state.named_keys = {}
     
-    # if 'input_shape' not in st.session_state:
-    #     st.session_state.input_shape = (-1,-1)
-
     if 'exposure_ratio' not in st.session_state:
         st.session_state.exposure_ratio = -1
 
@@ -292,9 +237,6 @@ def initialize_session():
 
     if 'paths' not in st.session_state:
         st.session_state.paths = {}
-
-    # if 'last_image_key' not in st.session_state:
-    #     st.session_state.last_image_key = ''
 
     if 'keys_' not in st.session_state:
         st.session_state.keys_ = Keys("initializing", 
