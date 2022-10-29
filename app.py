@@ -429,7 +429,7 @@ def run_app(default_power=0.5,
             st.image(cv2.imread(st.session_state.keys_to_images[st.session_state.keys_.enhanced_image_key]), channels="BGR")
             st.markdown("<h3 style='text-align: center; color: white;'>Fusion Weights</h3>", unsafe_allow_html=True)
             st.image(cv2.imread(st.session_state.keys_to_images[st.session_state.keys_.fusion_weights_key], cv2.IMREAD_UNCHANGED), clamp=True)          
-            st.markdown("<h3 style='text-align: center; color: white;'>Texture Map</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='text-align: center; color: white;'>Fine Texture Map</h3>", unsafe_allow_html=True)
             st.image(cv2.imread(st.session_state.keys_to_images[st.session_state.keys_.fine_texture_map_key], cv2.IMREAD_UNCHANGED), clamp=True)
         
             
