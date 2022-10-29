@@ -124,12 +124,10 @@ def calculate_texture_weights(image_01_maxRGB_reduced, restore_shape, kernel_sha
                 if texture_style == 'IV':
                     texture_weights_v = convolution_v_abs/(np.abs(convolution_v) + sharpness)
                     texture_weights_h = convolution_h_abs/(np.abs(convolution_h)+ sharpness)
-                    return gradient_v, gradient_h, texture_weights_v, texture_weights_h
 
                 elif texture_style == 'V':
                     texture_weights_v = convolution_v_abs/(np.abs(convolution_v) + sharpness)
                     texture_weights_h = convolution_h_abs/(np.abs(convolution_h)+ sharpness)
-                    return gradient_v, gradient_h, texture_weights_v, texture_weights_h
 
             # create total_variation_map, upsampled to full-size, save as image to disk, then free the resource 
         

@@ -63,23 +63,71 @@ def initialize_session():
     if 'granularity_options' not in st.session_state:
         st.session_state.granularity_options = ('standard', 'boost', 'max')
     
-    if 'granularity_options_index' not in st.session_state:
-        st.session_state.granularity_options_index = 0
+    if 'granularity_selection_key' not in st.session_state:
+        st.session_state.granularity_selection_key = str(randint(1000, 10000000))
+
+    if 'granularity_selection_index' not in st.session_state:
+        st.session_state.granularity_selection_index = 0
 
     if 'granularity_dict' not in st.session_state:
         st.session_state.granularity_dict = {'standard': 0.1, 'boost': 0.3, 'max': 0.5}
+    
+    if 'granularity_selection' not in st.session_state:
+        st.session_state.granularity_selection = st.session_state.granularity_options[st.session_state.granularity_selection_index]
 
     if 'viewer_options' not in st.session_state:
         st.session_state.viewer_options = ("Enhanced Image", "Original vs Enhanced", "Comparisons (interactive)", "Show All Processing Steps")
     
     if 'viewer_selection_key' not in st.session_state:
-        st.session_state.viewer_selection_key = "Default"
+        st.session_state.viewer_selection_key = str(randint(1000, 10000000))
 
     if 'viewer_selection_index' not in st.session_state:
         st.session_state.viewer_selection_index = 1     
 
     if 'viewer_selection' not in st.session_state:
         st.session_state.viewer_selection = st.session_state.viewer_options[st.session_state.viewer_selection_index]
+    
+    if 'comparison_options' not in st.session_state:
+        st.session_state.comparison_options = ("Original Image", "Enhanced Image", "Illumination Map", "Total Variation", "Fusion Weights", "Max Entropy Exposure", "Texture Weights", "Fine Texture Map", "Enhancement Map")
+
+    if 'left_image_selection_key' not in st.session_state:
+        st.session_state.left_image_selection_key = str(randint(1000, 10000000))
+
+    if 'left_image_selection_index' not in st.session_state:
+        st.session_state.left_image_selection_index = 0     
+
+    if 'left_image_selection' not in st.session_state:
+        st.session_state.left_image_selection = st.session_state.comparison_options[st.session_state.left_image_selection_index]
+
+    if 'right_image_selection_key' not in st.session_state:
+        st.session_state.right_image_selection_key = str(randint(1000, 10000000))
+
+    if 'right_image_selection_index' not in st.session_state:
+        st.session_state.right_image_selection_index = 1     
+
+    if 'right_image_selection' not in st.session_state:
+        st.session_state.right_image_selection = st.session_state.comparison_options[st.session_state.right_image_selection_index]
+
+    if 'texture_weight_calculator_options' not in st.session_state:
+        st.session_state.texture_weight_calculator_options = ('I', 'II', 'III', 'IV', 'V')
+    
+    if 'texture_weight_calculator_selection_key' not in st.session_state:
+        st.session_state.texture_weight_calculator_selection_key = str(randint(1000, 10000000))
+
+    if 'texture_weight_calculator_selection_index' not in st.session_state:
+        st.session_state.texture_weight_calculator_selection_index = 0
+
+    if 'texture_weight_calculator_dict' not in st.session_state:
+        st.session_state.texture_weight_calculator_dict = {
+                                'I':  ('I', CG_TOL, LU_TOL, MAX_ITER, FILL),
+                                'II': ('II', CG_TOL, LU_TOL, MAX_ITER, FILL),
+                                'III':('III', 0.1*CG_TOL, LU_TOL, 10*MAX_ITER, FILL),
+                                'IV': ('IV', 0.5*CG_TOL, LU_TOL, MAX_ITER, FILL/2),
+                                'V':  ('V', CG_TOL, LU_TOL, MAX_ITER, FILL)
+                                }
+    
+    if 'texture_weight_calculator_selection' not in st.session_state:
+        st.session_state.texture_weight_calculator_selection = st.session_state.texture_weight_calculator_options[st.session_state.texture_weight_calculator_selection_index]
 
     if 'base_dir' not in st.session_state:
         st.session_state.base_dir_path = BASE_DIR_PATH
@@ -111,17 +159,17 @@ def initialize_session():
     if 'data_checked' not in st.session_state:
         st.session_state.data_checked = False
 
-    if 'left_image_selection' not in st.session_state:
-        st.session_state.left_image_selection = "Original Image"
+    # if 'left_image_selection' not in st.session_state:
+    #     st.session_state.left_image_selection = "Original Image"
         
-    if 'right_image_selection' not in st.session_state:
-        st.session_state.right_image_selection = "Enhanced Image"     
+    # if 'right_image_selection' not in st.session_state:
+    #     st.session_state.right_image_selection = "Enhanced Image"     
 
-    if 'left_image_selection_index' not in st.session_state:
-        st.session_state.left_image_selection_index = 0
+    # if 'left_image_selection_index' not in st.session_state:
+    #     st.session_state.left_image_selection_index = 0
 
-    if 'right_image_selection_index' not in st.session_state:
-        st.session_state.right_image_selection_index = 1
+    # if 'right_image_selection_index' not in st.session_state:
+    #     st.session_state.right_image_selection_index = 1
 
     if 'query_params' not in st.session_state:
         st.session_state.query_params = {}
@@ -202,6 +250,7 @@ def initialize_session():
         st.session_state.show_resource_usage = False
     else:
         st.session_state.show_resource_usage = False
+
     if 'show_console' not in st.session_state:
         st.session_state.show_console = False
 

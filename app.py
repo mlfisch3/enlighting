@@ -33,8 +33,20 @@ def set_source(source='local'):
     else:
         st.session_state.input_source = 'U'
 
+    st.session_state.granularity_selection_key = str(randint(1000, 10000000))
+    st.session_state.granularity_selection_index = st.session_state.granularity_options.index(st.session_state.granularity_selection)
+
+    st.session_state.texture_weight_calculator_selection_key = str(randint(1000, 10000000))
+    st.session_state.texture_weight_calculator_selection_index = st.session_state.texture_weight_calculator_options.index(st.session_state.texture_weight_calculator_selection)
+
     st.session_state.viewer_selection_key = str(randint(1000, 10000000))
     st.session_state.viewer_selection_index = st.session_state.viewer_options.index(st.session_state.viewer_selection)
+
+    st.session_state.left_image_selection_key = str(randint(1000, 10000000))
+    st.session_state.left_image_selection_index = st.session_state.comparison_options.index(st.session_state.left_image_selection)
+
+    st.session_state.right_image_selection_key = str(randint(1000, 10000000))
+    st.session_state.right_image_selection_index = st.session_state.comparison_options.index(st.session_state.right_image_selection)
 
     print('\n')
     print('\n')
@@ -187,24 +199,18 @@ def run_app(default_power=0.5,
 
                 with param_tab1:
                     
-                    granularity_selection = st.radio("Resolution", st.session_state.granularity_options, index=st.session_state.granularity_options_index, horizontal=True, help="coming soon")
-                    
-                    granularity = st.session_state.granularity_dict[granularity_selection]
-                    st.session_state.granularity_options_index = st.session_state.granularity_options.index(granularity_selection)
+                    st.session_state.granularity_selection = st.radio("Resolution", st.session_state.granularity_options, key=st.session_state.granularity_selection_key, index=st.session_state.granularity_selection_index, horizontal=True, help="coming soon")
+                    granularity = st.session_state.granularity_dict[st.session_state.granularity_selection]
+
                     kernel_parallel = int(st.text_input(f'Kernel Parallel   (default = {default_kernel_parallel})', str(st.session_state.keys_.kernel_parallel), help="coming soon"))
                     kernel_orthogonal = int(st.text_input(f'Kernel Orthogonal   (default = {default_kernel_orthogonal})', str(st.session_state.keys_.kernel_orthogonal), help="coming soon")) 
+
                     smoothness = float(st.text_input(f'Smoothness   (default = {default_smoothness})', str(st.session_state.keys_.lamda), help="coming soon"))
+
                     sharpness = float(st.text_input(f'Sharpness   (default = {default_sharpness})', str(st.session_state.keys_.sharpness), help="coming soon"))
-                    texture_weight_calculator = st.radio("Select texture weight calculator", ('I', 'II', 'III', 'IV', 'V'), horizontal=True, help="coming soon") 
-                    texture_weight_calculator_dict = {
-                                'I':  ('I', CG_TOL, LU_TOL, MAX_ITER, FILL),
-                                'II': ('II', CG_TOL, LU_TOL, MAX_ITER, FILL),
-                                'III':('III', 0.1*CG_TOL, LU_TOL, 10*MAX_ITER, FILL),
-                                'IV': ('IV', 0.5*CG_TOL, LU_TOL, MAX_ITER, FILL/2),
-                                'V':  ('V', CG_TOL, LU_TOL, MAX_ITER, FILL)
-                                }
-                 
-                    texture_style, cg_tol, lu_tol, max_iter, fill = texture_weight_calculator_dict[texture_weight_calculator]
+
+                    st.session_state.texture_weight_calculator_selection = st.radio("Select texture weight calculator", st.session_state.texture_weight_calculator_options, key=st.session_state.texture_weight_calculator_selection_key, index=st.session_state.texture_weight_calculator_selection_index, horizontal=True, help="coming soon") 
+                    texture_style, cg_tol, lu_tol, max_iter, fill = st.session_state.texture_weight_calculator_dict[st.session_state.texture_weight_calculator_selection]
 
                 with param_tab2:
 
@@ -217,7 +223,7 @@ def run_app(default_power=0.5,
                 with param_tab3:
                    
                     power = float(st.text_input(f'Power     (default = {default_power})', str(default_power), help="coming soon"))
-                    color_gamma = float(st.text_input(f'Γ   (default = {default_color_gamma})', str(default_color_gamma), help="Increasing Γ suppresses false colorization.  However, true colors may become washed out as Γ → 1.  The default value 0.3981 was found to work well on many test images."))
+                    color_gamma = float(st.text_input(f'Color Spread Attenuation   (default = {default_color_gamma})', str(default_color_gamma), help="Color Spread Attenuation (CSA)).  Increasing CSR suppresses false colorization.  However, true colors may become washed out as Γ → 1.  The default value 0.3981 was found to work well on many test images."))
 
 
 
@@ -307,7 +313,7 @@ def run_app(default_power=0.5,
     # prepare to encode parameter settings in filenames of optional downloads
     granularity_param_str = f'_{granularity*100:.0f}'
     convolution_param_str = granularity_param_str + f'_{kernel_parallel:d}_{kernel_orthogonal:d}'
-    texture_param_str = convolution_param_str + f'_{sharpness*1000:.0f}_{texture_weight_calculator:s}'
+    texture_param_str = convolution_param_str + f'_{sharpness*1000:.0f}_{texture_style:s}'
     smooth_param_str = texture_param_str + f'_{smoothness*100:.0f}'
     fusion_param_str = smooth_param_str + f'_{color_gamma*100:.0f}_{power*100:.0f}_{-a*1000:.0f}_{b*1000:.0f}_{exposure_ratio_in*100:.0f}'
 
@@ -320,18 +326,17 @@ def run_app(default_power=0.5,
         st.session_state.viewer_selection = st.radio(" ", st.session_state.viewer_options, help="Coming soon", key=st.session_state.viewer_selection_key, horizontal=True, index=st.session_state.viewer_selection_index)#, on_change=prepare_next_key)
 
     if  st.session_state.viewer_selection == "Comparisons (interactive)":
-        comparison_options = ("Original Image", "Enhanced Image", "Illumination Map", "Total Variation", "Fusion Weights", "Max Entropy Exposure", "Texture Weights", "Fine Texture Map", "Enhancement Map")
     
-        with st.expander("Options "):
+        with st.expander("Comparison Options "):
             with st.form("Comparison"):
                 submitted = st.form_submit_button("Update Comparison")
                 col_left, col_right, _ = st.columns(3)
                 with col_left:
-                    st.session_state.left_image_selection = st.radio("Select Left", comparison_options, help="Coming Soon", key="compare_left", index=st.session_state.left_image_selection_index)
-                    st.session_state.left_image_selection_index = comparison_options.index(st.session_state.left_image_selection)
+                    st.session_state.left_image_selection = st.radio("Select Left", st.session_state.comparison_options, help="Coming Soon", key=st.session_state.left_image_selection_key, index=st.session_state.left_image_selection_index)
+                   # st.session_state.left_image_selection_index = st.session_state.comparison_options.index(st.session_state.left_image_selection)
                 with col_right:
-                    st.session_state.right_image_selection = st.radio("Select Right", comparison_options, help="Coming Soon", key="compare_right", index=st.session_state.right_image_selection_index)
-                    st.session_state.right_image_selection_index = comparison_options.index(st.session_state.right_image_selection)
+                    st.session_state.right_image_selection = st.radio("Select Right", st.session_state.comparison_options, help="Coming Soon", key=st.session_state.right_image_selection_key, index=st.session_state.right_image_selection_index)
+                    #st.session_state.right_image_selection_index = st.session_state.comparison_options.index(st.session_state.right_image_selection)
                 
         st.session_state.paths = {
                     "Original Image" : st.session_state.input_file_path, 
@@ -348,13 +353,13 @@ def run_app(default_power=0.5,
         left_image = cv2.cvtColor(cv2.imread(st.session_state.paths[st.session_state.left_image_selection]), cv2.COLOR_BGR2RGB)
         right_image = cv2.cvtColor(cv2.imread(st.session_state.paths[st.session_state.right_image_selection]), cv2.COLOR_BGR2RGB)
         image_comparison(
-            img1=left_image,
-            img2=right_image,
-            label1=st.session_state.left_image_selection,
-            label2=st.session_state.right_image_selection,
-            width=1080,
-            starting_position=50,
-            show_labels=True
+                img1=left_image,
+                img2=right_image,
+                label1=st.session_state.left_image_selection,
+                label2=st.session_state.right_image_selection,
+                width=1080,
+                starting_position=50,
+                show_labels=True
             )
        
 
