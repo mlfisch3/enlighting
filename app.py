@@ -195,20 +195,15 @@ def run_app(default_power=0.5,
                     kernel_orthogonal = int(st.text_input(f'Kernel Orthogonal   (default = {default_kernel_orthogonal})', str(st.session_state.keys_.kernel_orthogonal), help="coming soon")) 
                     smoothness = float(st.text_input(f'Smoothness   (default = {default_smoothness})', str(st.session_state.keys_.lamda), help="coming soon"))
                     sharpness = float(st.text_input(f'Sharpness   (default = {default_sharpness})', str(st.session_state.keys_.sharpness), help="coming soon"))
-                    # texture_weight_calculator = st.radio("Select texture weight calculator", ('I', 'II', 'III', 'IV', 'V'), horizontal=True, help="coming soon") 
-                    # texture_weight_calculator_dict = {
-                    #             'I':  ('I', CG_TOL, LU_TOL, MAX_ITER, FILL),
-                    #             'II': ('II', CG_TOL, LU_TOL, MAX_ITER, FILL),
-                    #             'III':('III', 0.1*CG_TOL, LU_TOL, 10*MAX_ITER, FILL),
-                    #             'IV': ('IV', 0.5*CG_TOL, LU_TOL, MAX_ITER, FILL/2),
-                    #             'V':  ('V', CG_TOL, LU_TOL, MAX_ITER, FILL)
-                    #             }
-                    texture_weight_calculator = st.radio("Select texture weight calculator", ('I', 'II', 'III'), horizontal=True, help="coming soon") 
+                    texture_weight_calculator = st.radio("Select texture weight calculator", ('I', 'II', 'III', 'IV', 'V'), horizontal=True, help="coming soon") 
                     texture_weight_calculator_dict = {
                                 'I':  ('I', CG_TOL, LU_TOL, MAX_ITER, FILL),
                                 'II': ('II', CG_TOL, LU_TOL, MAX_ITER, FILL),
-                                'III':('III', 0.1*CG_TOL, LU_TOL, 10*MAX_ITER, FILL)
+                                'III':('III', 0.1*CG_TOL, LU_TOL, 10*MAX_ITER, FILL),
+                                'IV': ('IV', 0.5*CG_TOL, LU_TOL, MAX_ITER, FILL/2),
+                                'V':  ('V', CG_TOL, LU_TOL, MAX_ITER, FILL)
                                 }
+                 
                     texture_style, cg_tol, lu_tol, max_iter, fill = texture_weight_calculator_dict[texture_weight_calculator]
 
                 with param_tab2:
@@ -224,6 +219,11 @@ def run_app(default_power=0.5,
                     power = float(st.text_input(f'Power     (default = {default_power})', str(default_power), help="coming soon"))
                     color_gamma = float(st.text_input(f'Γ   (default = {default_color_gamma})', str(default_color_gamma), help="Increasing Γ suppresses false colorization.  However, true colors may become washed out as Γ → 1.  The default value 0.3981 was found to work well on many test images."))
 
+
+
+
+
+
     start = datetime.datetime.now()
 
     report_runs('app.py|run_app|229')
@@ -235,7 +235,7 @@ def run_app(default_power=0.5,
     
     #▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲
 
-    report_runs('app.py|run_app|201')
+    report_runs('app.py|run_app|238')
     if st.session_state.debug:
         with st.expander("session_state 0.3:"):
             st.write(st.session_state)
