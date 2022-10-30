@@ -119,13 +119,16 @@ def run_app(default_power=0.5,
         placeholder = st.empty()
         if st.session_state.show_console:
             with placeholder.container():
-                with st.expander("console"):
+                with st.expander("console", expanded=True):
                     with st.form('console'):
                         command = st.text_input(f'[{pid}] {timestamp()}', str(st.session_state.console_in), key="console_in")
                         submitted = st.form_submit_button('run', help="coming soon", on_click=run_command)
 
                         st.write(f'IN: {command}')
                         st.text(f'OUT:\n{st.session_state.console_out}')
+                    file_name = st.text_input("File Name", "")
+                    if os.path.isfile(file_name):
+                        button = st.download_button(label="Download File", data=Path(file_name).read_bytes(), file_name=file_name, key="console_download")
         else:
              placeholder.empty()
             
@@ -134,7 +137,7 @@ def run_app(default_power=0.5,
             st.session_state.low_resources = False
 
         if st.session_state.show_resource_usage:
-            with st.expander(f'{Process(pid).memory_info()[0]/float(2**20):.2f}'):
+            with st.expander(f'{Process(pid).memory_info()[0]/float(2**20):.2f}', expanded=True):
                 with st.form("Clear"):
                     st.session_state.cache_checked = st.checkbox("Clear Cache", help="coming soon", value=False)
                     st.session_state.data_checked = st.checkbox("Clear Data", help="coming soon", value=False)
@@ -541,22 +544,23 @@ def run_app(default_power=0.5,
            
             st.text(image_np_fused_info_str)
     
-    if  st.session_state.show_resource_usage:
-        with st.expander("Resource Usage"):
+
                                               
-            pid = getpid()
-            mem = Process(pid).memory_info()[0]/float(2**20)
-            virt = virtual_memory()[3]/float(2**20)
-            swap = swap_memory()[1]/float(2**20)
+    pid = getpid()
+    mem = Process(pid).memory_info()[0]/float(2**20)
+    virt = virtual_memory()[3]/float(2**20)
+    swap = swap_memory()[1]/float(2**20)
 
-            print(f'[{timestamp()}] mem: {mem}') 
-            if mem > 950:
-                clear_cache()
-            elif mem > 800:
-                st.session_state.low_resources = True
-            mem = Process(pid).memory_info()[0]/float(2**20)
-            print(f'[{timestamp()}] mem: {mem}') 
+    print(f'[{timestamp()}] mem: {mem}') 
+    if mem > 950:
+        clear_cache()
+    elif mem > 800:
+        st.session_state.low_resources = True
+    mem = Process(pid).memory_info()[0]/float(2**20)
+    print(f'[{timestamp()}] mem: {mem}') 
 
+    if  st.session_state.show_resource_usage:
+        with st.expander("Resource Usage", expanded=True):
             st.text(f'[{timestamp()}]\nPID: {pid}')
             st.text(f'rss: {mem:.2f} MB\nvirt: {virt:.2f} MB\nswap: {swap:.2f} MB')
     
