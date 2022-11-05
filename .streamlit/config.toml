@@ -1,9 +1,14 @@
+[logger]
+level = "debug"
+[browser]
+gatherUsageStats = false
+serverPort = 8501
 [runner]
 fastReruns = false
 [server]
 headless = true
 runOnSave = true
-port = 5001
+port = 8501
 enableCORS = false
 enableXsrfProtection=false
 [theme]
