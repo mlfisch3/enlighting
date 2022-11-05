@@ -99,12 +99,12 @@ def run_app(default_power=0.5,
             about_tab, details_tab = st.tabs(["• Intro", "• Details"])
             with about_tab:
             
-                st.markdown("<h1 style='text-align: left; color: white;'>Welcome to Light-Fix</h1>", unsafe_allow_html=True)
+                st.markdown("<h1 style='text-align: left; color: white;'>Welcome to InLight</h1>", unsafe_allow_html=True)
                 st.markdown("<h3 style='text-align: left; color: yellow'>Check out the examples to see what's possible</h3>", unsafe_allow_html=True)
 
                 st.markdown("<h3 style='text-align: left; color: yellow'>Upload your own images to enhance</h3>", unsafe_allow_html=True)
             with details_tab:
-                detailed_info = f'Light-Fix restores lighting detail to underexposed image regions.\n\r\n\rThe app is fully functional, but help descriptions are still being added.\n\rThis detailed information section will be expanded.\n\rA detailed explanation of the underlying algorithm is also in preparation'
+                detailed_info = f'InLight restores lighting detail to underexposed image regions.\n\r\n\rThe app is fully functional, but help descriptions are still being added.\n\rThis detailed information section will be expanded.\n\rA detailed explanation of the underlying algorithm is also in preparation'
                 details = f""" 
                 <style>
                 p.a {{
