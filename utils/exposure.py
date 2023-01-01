@@ -31,7 +31,7 @@ def optimize_exposure_ratio(array, a, b, lo=1, hi=7, npoints=20):
     if sum(array.shape)==0:
         return 1.0
 
-    sample_ratios = np.r_[lo:hi:np.complex(0,npoints)].tolist()
+    sample_ratios = np.r_[lo:hi:complex(0,npoints)].tolist()
     entropies = np.array(list(map(lambda k: entropy(applyK(array, k, a, b)), sample_ratios)))
     optimal_index = np.argmax(entropies)
     return sample_ratios[optimal_index]
