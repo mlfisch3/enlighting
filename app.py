@@ -20,6 +20,12 @@ from utils.session import Keys, report_runs
 import weakref
 from pathlib import Path
 from streamlit_image_comparison import image_comparison
+# from streamlit_javascript import st_javascript
+# from streamlit_js_eval import streamlit_js_eval
+
+def set_layout():
+    st.session_state.layout_selection_key = str(randint(1000, 10000000))
+    st.session_state.layout_selection_index = st.session_state.layout_options.index(st.session_state.layout_selection)
 
 def set_source(source='local'):
     print('\n')
@@ -47,6 +53,8 @@ def set_source(source='local'):
 
     st.session_state.right_image_selection_key = str(randint(1000, 10000000))
     st.session_state.right_image_selection_index = st.session_state.comparison_options.index(st.session_state.right_image_selection)
+
+    set_layout()
 
     print('\n')
     print('\n')
@@ -95,7 +103,7 @@ def run_app(default_power=0.5,
     report_runs('app.py|run_app|83')
     container = st.sidebar.container()
     with container:
-        with st.expander("About ", expanded=True):
+        with st.expander(":flower_playing_cards: About ", expanded=True):
             about_tab, details_tab = st.tabs(["• Intro", "• Details"])
             with about_tab:
             
@@ -104,17 +112,17 @@ def run_app(default_power=0.5,
 
                 st.markdown("<h3 style='text-align: left; color: yellow'>Upload your own images to enhance</h3>", unsafe_allow_html=True)
             with details_tab:
-                detailed_info = f'InLight restores lighting detail to underexposed image regions.\n\r\n\rThe app is fully functional, but help descriptions are still being added.\n\rThis detailed information section will be expanded.\n\rA detailed explanation of the underlying algorithm is also in preparation'
-                details = f""" 
-                <style>
-                p.a {{
-                    font: bold 14px Arial;
-                }}
-                </style>
-                <p class="a">{detailed_info}</p>
-                """
+                
+                #Help descriptions are still being added.\n\rThis detailed information section will be expanded.\n\rA detailed explanation of the underlying algorithm is also in preparation'
+                #detailed_info = f'InLight restores lighting detail to underexposed image regions.\n\r\n\rThe app is fully functional, but help descriptions are still being added.\n\rThis detailed information section will be expanded.\n\rA detailed explanation of the underlying algorithm is also in preparation'
+                href1 = f'<a href="https://arxiv.org/abs/1711.00591">1</a>'
+                href2 = f'<a href="https://www.researchgate.net/publication/320728375">2</a>'
+                href3 = f'<a href="https://www.researchgate.net/publication/318730125">3</a>'
+                href4 = f'<a href="https://docs.opencv.org/4.x/dc/dfe/group__intensity__transform.html#ga9b65943a38b905f9ed42a622de92e740">module</a>'
+                line_break='\n\r'
+                detailed_info = f'InLight restores lighting detail to underexposed image regions.{line_break}The app is an interactive Python implementation of the BIMEF algorithm published in these 2017 papers {href1}, {href2}, {href3}.\n\n\n\rI became aware of this method while exploring the OpenCV intensity_transform {href4}.\n\n\n\rThe effectiveness of this method impressed me to the point that I wanted to really understand how it works.  Being new to computer vision, I decided the best way to learn a lot was to completely implement BIMEF from scratch.\n\n\n\rAfter getting everything to work in a Jupyter notebook, I thought it would be interesting to have a fully functional GUI so I could easily view the effects of changing model parameters.\n\n\n\rThis helped me gain intuition for the various mathematical and perceptual concepts involved.\n\n\n\rIt was also great to have an efficient way to fix all the photos I have taken with bad lighting ☺.\n\n\n\rThe next natural step was to make it available as a web app.\n\n\n\rInLight is the result.'
                 st.markdown(detailed_info, unsafe_allow_html=True)
-
+               
         pid = getpid()
         placeholder = st.empty()
         if st.session_state.show_console:
@@ -128,7 +136,7 @@ def run_app(default_power=0.5,
                         st.text(f'OUT:\n{st.session_state.console_out}')
                     file_name = st.text_input("File Name", "")
                     if os.path.isfile(file_name):
-                        button = st.download_button(label="Download File", data=Path(file_name).read_bytes(), file_name=file_name, key="console_download")
+                        button = st.download_button(label=":inbox_tray: :file_folder: :arrow_heading_down: :desktop_computer: Download File", data=Path(file_name).read_bytes(), file_name=file_name, key="console_download")
         else:
              placeholder.empty()
             
@@ -144,11 +152,11 @@ def run_app(default_power=0.5,
                     st.form_submit_button("Clear", on_click=clear, args=([st.session_state.cache_checked, st.session_state.data_checked]), help="coming soon")
 
         with st.expander("Image Source", expanded=True):
-            source_tab0, source_tab1 = st.tabs([f"• Image Uploader", f'• Example Selector'])
+            source_tab0, source_tab1 = st.tabs([f":arrow_heading_up: :outbox_tray: Image Uploader", f':film_frames: Example Selector'])
 
             with source_tab0:
                 report_runs('app.py|input_example_path|135')
-                fImage = st.file_uploader("Upload Your Own Image:", on_change=set_source, kwargs=dict(source='upload'), help="coming soon", key=st.session_state.upload_key)
+                fImage = st.file_uploader(":outbox_tray: Upload Your Own Image:", on_change=set_source, kwargs=dict(source='upload'), help="coming soon", key=st.session_state.upload_key)
                 report_runs('app.py|st.file_uploader|137')
 
             with source_tab1:
@@ -193,32 +201,32 @@ def run_app(default_power=0.5,
             st.write(st.session_state)
     
     with st.sidebar:
-        
-        with st.expander("Parameters", expanded=True):
-            with st.form('Parameters'):                
-                submitted = st.form_submit_button('Apply Changes', help="coming soon")
 
-                param_tab1, param_tab2, param_tab3 = st.tabs(["• Illumination", "• Exposures", "• Power"])
+        with st.expander(":gear: Parameters", expanded=False):
+            with st.form('Parameters'):                
+                submitted = st.form_submit_button(f'Apply Changes', help="coming soon")
+
+                param_tab1, param_tab2, param_tab3 = st.tabs([":bulb: Illumination ", ":camera: Exposures", ":low_brightness: :high_brightness: Power"])
 
                 with param_tab1:
-                    
-                    st.session_state.granularity_selection = st.radio("Resolution", st.session_state.granularity_options, key=st.session_state.granularity_selection_key, index=st.session_state.granularity_selection_index, horizontal=True, help="coming soon")
+                    st.write(f':skin-tone-2: :skin-tone-3: :skin-tone-4: :skin-tone-5: :skin-tone-6: ')
+                    st.session_state.granularity_selection = st.radio(":sparkles: Resolution", st.session_state.granularity_options, key=st.session_state.granularity_selection_key, index=st.session_state.granularity_selection_index, horizontal=True, help="Spatial resolution of lighting enhancement.  The default (standard) setting is usually the right choice.  The quality of the enhanced image usually isn't improved by using a higher resolution.  Further, the required computation time can increase significantly, especially for images with high pixel density.  However, the intermediate processing images are much more interesting to look at when using max resolution")
                     granularity = st.session_state.granularity_dict[st.session_state.granularity_selection]
 
-                    kernel_parallel = int(st.text_input(f'Kernel Parallel   (default = {default_kernel_parallel})', str(st.session_state.keys_.kernel_parallel), help="coming soon"))
+                    kernel_parallel = int(st.text_input(f':game_die: Kernel Parallel   (default = {default_kernel_parallel})', str(st.session_state.keys_.kernel_parallel), help="coming soon"))
                     kernel_orthogonal = int(st.text_input(f'Kernel Orthogonal   (default = {default_kernel_orthogonal})', str(st.session_state.keys_.kernel_orthogonal), help="coming soon")) 
 
-                    smoothness = float(st.text_input(f'Smoothness   (default = {default_smoothness})', str(st.session_state.keys_.lamda), help="coming soon"))
+                    smoothness = float(st.text_input(f':fireworks: Smoothness   (default = {default_smoothness})', str(st.session_state.keys_.lamda), help="coming soon"))
 
-                    sharpness = float(st.text_input(f'Sharpness   (default = {default_sharpness})', str(st.session_state.keys_.sharpness), help="coming soon"))
+                    sharpness = float(st.text_input(f':sparkler: Sharpness   (default = {default_sharpness})', str(st.session_state.keys_.sharpness), help="coming soon"))
 
                     st.session_state.texture_weight_calculator_selection = st.radio("Select texture weight calculator", st.session_state.texture_weight_calculator_options, key=st.session_state.texture_weight_calculator_selection_key, index=st.session_state.texture_weight_calculator_selection_index, horizontal=True, help="coming soon") 
                     texture_style, cg_tol, lu_tol, max_iter, fill = st.session_state.texture_weight_calculator_dict[st.session_state.texture_weight_calculator_selection]
 
                 with param_tab2:
 
-                    a = float(st.text_input(f'Camera A   (default = {default_a})', str(default_a), help="coming soon"))
-                    b = float(st.text_input(f'Camera B   (default = {default_b})', str(default_b), help="coming soon"))
+                    a = float(st.text_input(f':control knobs: Camera A   (default = {default_a})', str(default_a), help="coming soon"))
+                    b = float(st.text_input(f':level_slider: Camera B   (default = {default_b})', str(default_b), help="coming soon"))
                     lo = int(st.text_input(f'Min Gain   (default = {default_lo})', str(default_lo), help="Sets lower bound of search range for optimal Exposure Ratio.  Only relevant if Exposure Ratio is in 'auto' mode"))
                     hi = int(st.text_input(f'Max Gain   (default = {default_hi})', str(default_hi), help="Sets upper bound of search range for optimal Exposure Ratio.  Only relevant if Exposure Ratio is in 'auto' mode"))
                     exposure_ratio_in = float(st.text_input(f'Exposure Ratio   (default = -1 (auto))', str(default_exposure_ratio), help="coming soon"))
@@ -226,7 +234,7 @@ def run_app(default_power=0.5,
                 with param_tab3:
                    
                     power = float(st.text_input(f'Power     (default = {default_power})', str(default_power), help="coming soon"))
-                    color_gamma = float(st.text_input(f'Color Spread Attenuation   (default = {default_color_gamma})', str(default_color_gamma), help="Color Spread Attenuation (CSA)).  Increasing CSR suppresses false colorization.  However, true colors may become washed out as Γ → 1.  The default value 0.3981 was found to work well on many test images."))
+                    color_gamma = float(st.text_input(f':art: Color Spread Attenuation   (default = {default_color_gamma})', str(default_color_gamma), help="Color Spread Attenuation (CSA)).  Increasing CSR suppresses false colorization.  However, true colors may become washed out as Γ → 1.  The default value 0.3981 was found to work well on many test images."))
 
 
 
@@ -325,11 +333,10 @@ def run_app(default_power=0.5,
     input_file_basename = input_file_name.replace(input_file_ext, '')
 
     with st.expander(f'Select Viewer', expanded=True):
-
-        st.session_state.viewer_selection = st.radio(" ", st.session_state.viewer_options, help="Coming soon", key=st.session_state.viewer_selection_key, horizontal=True, index=st.session_state.viewer_selection_index)#, on_change=prepare_next_key)
+        st.session_state.viewer_selection = st.radio(" ", st.session_state.viewer_options, help="Coming soon", key=st.session_state.viewer_selection_key, horizontal=True, index=st.session_state.viewer_selection_index, on_change=set_layout)
 
     if  st.session_state.viewer_selection == "Comparisons (interactive)":
-    
+
         with st.expander("Comparison Options "):
             with st.form("Comparison"):
                 submitted = st.form_submit_button("Update Comparison")
@@ -355,6 +362,8 @@ def run_app(default_power=0.5,
                 
         left_image = cv2.cvtColor(cv2.imread(st.session_state.paths[st.session_state.left_image_selection]), cv2.COLOR_BGR2RGB)
         right_image = cv2.cvtColor(cv2.imread(st.session_state.paths[st.session_state.right_image_selection]), cv2.COLOR_BGR2RGB)
+        #screenwidth = streamlit_js_eval(js_expressions='screen.width', key = 'SCR')
+        #st.write(f"Screen width is {screenwidth}")
         image_comparison(
                 img1=left_image,
                 img2=right_image,
@@ -381,14 +390,43 @@ def run_app(default_power=0.5,
                                    )   
 
     elif  st.session_state.viewer_selection == "Original vs Enhanced":
-        col1, col2 = st.columns(2)
+        with st.expander("↕ ↔", expanded=False):
+            st.session_state.layout_selection = st.radio ('Layout', st.session_state.layout_options, horizontal=True, help="Coming Soon", key=st.session_state.layout_selection_key, index=st.session_state.layout_selection_index)
+        
+        if st.session_state.layout_selection == 'auto':
+            if image_np.shape[0] > image_np.shape[1]:
+                layout_selection = 'horizontal'
+            else:
+                layout_selection = 'vertical'
+        else:
+            layout_selection = st.session_state.layout_selection
+        if layout_selection == 'horizontal':
 
-        with col1:        
-            
+            col1, col2 = st.columns(2)
+
+            with col1:        
+                
+                st.markdown("<h3 style='text-align: center; color: white;'>Original Image</h3>", unsafe_allow_html=True)
+                st.image(cv2.imread(st.session_state.input_file_path), channels="BGR")
+
+            with col2:
+
+                st.markdown("<h3 style='text-align: center; color: white;'>Enhanced Image</h3>", unsafe_allow_html=True)
+                st.image(cv2.imread(st.session_state.keys_to_images[st.session_state.keys_.enhanced_image_key]), channels="BGR")
+
+                output_fused_file_name = input_file_basename + '_FUSION' + fusion_param_str + input_file_ext    
+                output_fused_file_name = st.text_input('Download Enhanced Image As', output_fused_file_name)
+                ext = '.' + output_fused_file_name.split('.')[-1]
+                button = st.download_button(label = ":floppy_disk: Download Enhanced Image",  
+                                                data=Path(st.session_state.keys_to_images[st.session_state.keys_.enhanced_image_key]).read_bytes(),
+                                                file_name = output_fused_file_name, 
+                                                mime = f"image/{input_file_ext}", 
+                                                key='ei'
+                                           )   
+        else:
             st.markdown("<h3 style='text-align: center; color: white;'>Original Image</h3>", unsafe_allow_html=True)
             st.image(cv2.imread(st.session_state.input_file_path), channels="BGR")
 
-        with col2:
 
             st.markdown("<h3 style='text-align: center; color: white;'>Enhanced Image</h3>", unsafe_allow_html=True)
             st.image(cv2.imread(st.session_state.keys_to_images[st.session_state.keys_.enhanced_image_key]), channels="BGR")
@@ -396,13 +434,12 @@ def run_app(default_power=0.5,
             output_fused_file_name = input_file_basename + '_FUSION' + fusion_param_str + input_file_ext    
             output_fused_file_name = st.text_input('Download Enhanced Image As', output_fused_file_name)
             ext = '.' + output_fused_file_name.split('.')[-1]
-            button = st.download_button(label = "Download Enhanced Image",  
+            button = st.download_button(label = ":floppy_disk: Download Enhanced Image",  
                                             data=Path(st.session_state.keys_to_images[st.session_state.keys_.enhanced_image_key]).read_bytes(),
                                             file_name = output_fused_file_name, 
                                             mime = f"image/{input_file_ext}", 
                                             key='ei'
                                        )   
-
     else:
 
         col10, col20, col30 = st.columns(3)
@@ -436,7 +473,7 @@ def run_app(default_power=0.5,
             st.image(cv2.imread(st.session_state.keys_to_images[st.session_state.keys_.fine_texture_map_key], cv2.IMREAD_UNCHANGED), clamp=True)
         
             
-        with st.expander("Download Selected Results"):           
+        with st.expander(":floppy_disk: Download Selected Results"):           
 
             output_fused_file_name = input_file_basename + '_FUSION' + fusion_param_str + input_file_ext    
             output_fused_file_name = st.text_input('Download Enhanced Image As', output_fused_file_name)

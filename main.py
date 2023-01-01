@@ -16,9 +16,11 @@ import gc
 import sys
 import datetime
 from copy import copy
+from importlib import reload
 from utils import session
 from app import run_app
 from utils.logging import timestamp, log_memory
+import utils.config
 
 
 def main():
@@ -66,7 +68,15 @@ def main():
     else:
         st.session_state.debug = False
 
-    session.report_runs('main.py|69')
+    if 'reconfig' in query_params:
+        st.session_state.reconfig = query_params['reconfig'][0]
+    else:
+        st.session_state.reconfig = False
+
+    if st.session_state.reconfig:
+        reload(utils.config)
+
+#    session.report_runs('main.py|69')
 
     run_app()
     
@@ -78,7 +88,7 @@ def main():
     print(f'[{timestamp()}]  Total processing time: {total_process_time:.5f} s')
     ss.completed_main_runs += 1
     session.report_runs('main.py|80')
-    print(st.session_state.state_history)
+#    print(st.session_state.state_history)
     print('▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲')
     print('\n')
 

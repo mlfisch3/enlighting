@@ -86,7 +86,19 @@ def initialize_session():
 
     if 'viewer_selection' not in st.session_state:
         st.session_state.viewer_selection = st.session_state.viewer_options[st.session_state.viewer_selection_index]
+
+    if 'layout_options' not in st.session_state:
+        st.session_state.layout_options = ('horizontal', 'vertical', 'auto')
+
+    if 'layout_selection_index' not in st.session_state:
+        st.session_state.layout_selection_index = 0
+            
+    if 'layout_selection_key' not in st.session_state:
+        st.session_state.layout_selection_key = str(randint(1000, 10000000))
     
+    if 'layout_selection' not in st.session_state:
+        st.session_state.layout_selection = st.session_state.layout_options[st.session_state.layout_selection_index]
+
     if 'comparison_options' not in st.session_state:
         st.session_state.comparison_options = ("Original Image", "Enhanced Image", "Illumination Map", "Total Variation", "Fusion Weights", "Max Entropy Exposure", "Texture Weights", "Fine Texture Map", "Enhancement Map")
 
@@ -174,6 +186,8 @@ def initialize_session():
     if 'query_params' not in st.session_state:
         st.session_state.query_params = {}
         st.session_state.query_params['console'] = False
+        st.session_state.query_params['resources'] = False
+        st.session_state.query_params['cache'] = False
 
     if 'total_main_runs' not in st.session_state:
         st.session_state.total_main_runs = 0

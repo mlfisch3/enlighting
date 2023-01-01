@@ -65,8 +65,10 @@ def show_image_array(figs, num_cols=-1, size=20, titles=None, normalize=True, sh
   
   height = figs[0].shape[0]
   width = figs[0].shape[1]
-
+  
+  #R = round(len(figs)/M + 0.5) # how many rows are needed, in order to have no more than M images per row
   N = round(M * width / (1.2 * height) + 0.5) # given M & individual image dimensions, N is the number of rows corresponding to filled cells. 
+  # if N < R, split figures into groups of at most N*M each.
   B = int(len(figs)/(N*M)) # number of groups
   x = len(figs)/(N*M) - B
   if x > 0:
@@ -78,10 +80,8 @@ def show_image_array(figs, num_cols=-1, size=20, titles=None, normalize=True, sh
         for j, figure in enumerate(figs[k*M*N:min((k+1)*M*N, len(figs))]):        
             plt.subplot(N,M,j+1)
             imshow(figure, normalize=normalize)
-            if not show_axes:
-                plt.axis("off")
-            if not show_grid:
-                plt.grid(visible=False)
+            [plt.axis("off"),plt.axis("on")][show_axes]
+            plt.grid(visible=show_grid)
 
         if tight_layout:  
           fig.tight_layout()
@@ -92,13 +92,11 @@ def show_image_array(figs, num_cols=-1, size=20, titles=None, normalize=True, sh
         fig = plt.figure(figsize=(size,size))
         for j, (figure, title) in enumerate(zip(figs[k*M*N:min((k+1)*M*N, len(figs))], titles[k*M*N:min((k+1)*M*N, len(figs))])):        
             plt.subplot(N,M,j+1)
-            imshow(figure, normalize=normalize)
-            if not show_axes:
-                plt.axis("off")
-            if not show_grid:
-                plt.grid(visible=False)
+            imshow(figure, normalize=normalize)            
+            [plt.axis("off"),plt.axis("on")][show_axes]
+            plt.grid(visible=show_grid)
 
-            if titles is not None:
+            if title is not None:
                 plt.title(title)
             
         if tight_layout:  
