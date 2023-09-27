@@ -6,3 +6,4 @@ scipy
 pillow
 matplotlib
 psutil
+pympler
